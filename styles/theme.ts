@@ -24,8 +24,8 @@ const theme: Theme = {
   colors: {
     background: "rgb(24, 19, 19)",
     text: "rgb(226, 217, 211)",
-    primary: "rgb(145, 255, 200)",
-    primaryGradient: getGradient("rgb(145, 255, 200)"),
+    primary: "rgb(255,223,0)",
+    primaryGradient: getGradient("rgb(255,223,0)"),
     heading: "rgb(226, 217, 211)",
     background2: "#1E1E24",
     backgroundGradient: getGradient("rgb(24, 19, 19)"),
@@ -33,8 +33,8 @@ const theme: Theme = {
       light: {
         background: "rgb(226, 217, 211)",
         text: "rgb(24, 19, 19)",
-        primary: "rgb(145, 255, 200)",
-        primaryGradient: getGradient("rgb(145, 255, 200)"),
+        primary: "rgb(255,223,0)",
+        primaryGradient: getGradient("rgb(255,223,0)"),
         heading: "#1E1E24",
         background2: "#1E1E24",
         backgroundGradient: getGradient("rgb(226, 217, 211)")
