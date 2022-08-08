@@ -1,19 +1,20 @@
 /** @jsxImportSource theme-ui */
 import Head from 'next/head'
 
-import { Heading, Text } from '@theme-ui/components'
-
 import Header from '@/components/Header/Header'
 import Roulette from '@/components/Roulette/Roulette'
+import { BetOptions } from '@/components/BetOptions/BetOptions'
+import { useState } from 'react'
 
 export default function Home() {
+	const [selectedBet, setSelectedBet] = useState<number>(0.05)
 	return (
 		<>
 			<Head>
 				<title>Winner Wheel</title>
 				<meta
 					name='description'
-					content='Spin and try your best luck on the official Winner Wheel game.'
+					content='Spin and try your best of luck on the official Winner Wheel game.'
 				/>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
@@ -25,42 +26,16 @@ export default function Home() {
 					flexDirection: 'column',
 					justifyContent: 'center',
 					alignItems: 'center',
-					marginTop: '4rem',
+					background: 'url(images/background2.jpeg)',
+					paddingTop: '2rem',
+					height: '100vh',
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
 				}}
 			>
 				<Roulette />
+				<BetOptions selectedBet={selectedBet} setSelectedBet={setSelectedBet} />
 			</main>
-
-			<footer
-				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					margin: '4rem 0',
-				}}
-			>
-				Powered by
-				<a
-					href='https://twitter.com/mentaworks'
-					target='_blank'
-					rel='noopener noreferrer'
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						marginLeft: '0.2em',
-					}}
-				>
-					<Text
-						variant='small'
-						sx={{
-							display: 'flex',
-							alignItems: 'center',
-						}}
-					>
-						menta.works
-					</Text>
-				</a>
-			</footer>
 		</>
 	)
 }
