@@ -33,7 +33,7 @@ export default function Home() {
 					backgroundSize: 'cover',
 				}}
 			>
-				<Roulette />
+				<Roulette selectedBet={selectedBet} />
 				<BetOptions selectedBet={selectedBet} setSelectedBet={setSelectedBet} />
 			</main>
 		</>
