@@ -25,12 +25,16 @@ export const BetOptions = ({
 		>
 			{betOptions.map((value) => (
 				<Button
+					onClick={() => setSelectedBet(value)}
 					sx={{
 						marginRight: '2rem',
 						marginBottom: '1rem',
 						color: '#000',
-						background: getGradient('rgb(213, 184, 255)'),
-						border: 'none',
+						background: (theme) => theme.colors?.primaryGradient,
+						border: (theme) =>
+							selectedBet === value
+								? `1px solid ${theme.colors?.primary}`
+								: 'none',
 					}}
 				>
 					{value} SOL
