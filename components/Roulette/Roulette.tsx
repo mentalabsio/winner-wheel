@@ -1,4 +1,7 @@
-import { useWallet } from '@solana/wallet-adapter-react'
+import { getGradient } from '@/styles/theme'
+import { web3 } from '@project-serum/anchor'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { LAMPORTS_PER_SOL, Transaction } from '@solana/web3.js'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { Box, Button } from 'theme-ui'
@@ -122,37 +125,57 @@ const data = [
 	},
 ]
 
-export default () => {
+export interface RouletteProps {
+	selectedBet: number
+}
+
+export default (props: RouletteProps) => {
+	const { selectedBet } = props
 	const [mustSpin, setMustSpin] = useState(false)
 	const [prizeNumber, setPrizeNumber] = useState(0)
-	const { signTransaction } = useWallet()
-
-	console.log(mustSpin)
+	const { signTransaction, publicKey } = useWallet()
+	const { connection } = useConnection()
 
 	const handleStartSpinning = async () => {
-		console.log('started')
-		// const tx = new Transaction()
+		if (!publicKey) return null
 
-		// transfer from user to house
-		// const ix = new Transfer({})
+		let blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
 
-		// const signed = signTransaction(tx)
+		const tx = new Transaction({
+			feePayer: publicKey,
+			recentBlockhash: blockhash,
+		})
 
-		// handleTransfer (API)
-		const newPrizeNumber = await (
+		tx.add(
+			web3.SystemProgram.transfer({
+				fromPubkey: publicKey,
+				toPubkey: new web3.PublicKey(
+					'ATVgGHUBn1dCvuMAm25NjgHBVuR8dPtpT2brkQ1F6V8M'
+				),
+				lamports: selectedBet * LAMPORTS_PER_SOL,
+			})
+		)
+
+		// ask for user to sign transaction
+		const signedTransaction = await signTransaction(tx)
+
+		if (!signedTransaction) return null
+
+		const res = await (
 			await fetch('/api/transactions/getPrize', {
-				// body: signed.serialize(),
 				method: 'POST',
 				body: JSON.stringify({
-					dataLength: data.length,
+					serializedTx: signedTransaction.serialize(),
+					data,
+					publicKey,
+					selectedBet,
 				}),
 			})
 		).json()
 
-		setPrizeNumber(newPrizeNumber.data)
+		setPrizeNumber(res.data.number)
 		setMustSpin(true)
-		console.log('winner index:', newPrizeNumber.data)
-		console.log('winner option:', data[newPrizeNumber.data])
+		console.log('winner option:', data[res.data.number])
 	}
 
 	useEffect(() => {}, [mustSpin])
@@ -170,6 +193,12 @@ export default () => {
 					mustStartSpinning={mustSpin}
 					prizeNumber={prizeNumber}
 					data={data}
+					radiusLineWidth={0}
+					innerRadius={10}
+					innerBorderWidth={2}
+					innerBorderColor={'#E1CA39'}
+					outerBorderWidth={2}
+					textDistance={80}
 					onStopSpinning={() => {
 						setMustSpin(false)
 					}}
