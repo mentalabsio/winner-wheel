@@ -68,7 +68,7 @@ const data = [
   {
     option: '3X',
     style: {
-      backgroundColor: '#F4D01B',
+      backgroundColor: '#D1AD6B',
       textColor: '#fff',
     },
   },
