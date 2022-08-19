@@ -5,41 +5,41 @@ import { Button, Flex } from 'theme-ui'
 const betOptions = [0.05, 0.1, 0.25, 0.5, 1]
 
 export interface BetOptionsProps {
-	selectedBet: number
-	setSelectedBet: Dispatch<SetStateAction<number>>
+  selectedBet: number
+  setSelectedBet: Dispatch<SetStateAction<number>>
 }
 
 export const BetOptions = ({
-	selectedBet,
-	setSelectedBet,
+  selectedBet,
+  setSelectedBet,
 }: BetOptionsProps) => {
-	return (
-		<Flex
-			sx={{
-				flexDirection: 'row',
-				alignItems: 'center',
-				justifyContent: 'center',
-				flexWrap: 'wrap',
-				maxWidth: '26rem',
-			}}
-		>
-			{betOptions.map((value) => (
-				<Button
-					onClick={() => setSelectedBet(value)}
-					sx={{
-						marginRight: '2rem',
-						marginBottom: '1rem',
-						color: '#000',
-						background: (theme) => theme.colors?.primaryGradient,
-						border: (theme) =>
-							selectedBet === value
-								? `1px solid ${theme.colors?.primary}`
-								: 'none',
-					}}
-				>
-					{value} SOL
-				</Button>
-			))}
-		</Flex>
-	)
+  return (
+    <Flex
+      sx={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        maxWidth: '36rem',
+      }}
+    >
+      {betOptions.map((value) => (
+        <Button
+          onClick={() => setSelectedBet(value)}
+          sx={{
+            marginRight: '2rem',
+            marginBottom: '1rem',
+            color: '#000',
+            background: (theme) => theme.colors?.primaryGradient,
+            border: (theme) =>
+              selectedBet === value
+                ? `1px solid ${theme.colors?.primary}`
+                : 'none',
+          }}
+        >
+          {value} SOL
+        </Button>
+      ))}
+    </Flex>
+  )
 }
