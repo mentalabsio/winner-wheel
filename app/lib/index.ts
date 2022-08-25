@@ -1,9 +1,10 @@
-import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import BN from "bn.js";
-import { initializeHouse } from "./gen/instructions";
-import { findHouseAddress } from "./pda";
+import { House } from "./gen/accounts";
+import { createBetProof, initializeHouse } from "./gen/instructions";
+import { findBetProofAddress, findHouseAddress } from "./pda";
 
-export const WinnerWheelProgram = () => {
+export const WinnerWheelProgram = (connection: Connection) => {
   const systemProgram = SystemProgram.programId;
 
   const createHouseInstruction = ({
@@ -41,7 +42,34 @@ export const WinnerWheelProgram = () => {
     return ix;
   };
 
+  const createBetProofInstruction = async ({
+    house,
+    user,
+    betValue,
+  }: {
+    house: PublicKey;
+    user: PublicKey;
+    betValue: BN;
+  }) => {
+    const [feeVaultOne, feeVaultTwo] = (await House.fetch(connection, house))
+      .feeVaults;
+    const betProof = findBetProofAddress({ user, house });
+
+    const ix = createBetProof(
+      { betValue },
+      {
+        user,
+        house,
+        betProof,
+        feeVaultOne,
+        feeVaultTwo,
+        systemProgram,
+      }
+    );
+  };
+
   return {
     createHouseInstruction,
+    createBetProofInstruction,
   };
 };
