@@ -81,9 +81,11 @@ impl House {
 
     pub fn calculate_fee(&self, amount: u64) -> Result<u64> {
         let basis_points = self.fee_basis_points as u64;
+        // bps * amount / 10_000
+        // 0.05$SOL * 125bps = 1.25% * 50_000_000 = 125 * 50kk / 10_000
         basis_points
             .checked_mul(amount)
-            .and_then(|n| n.checked_mul(1_000_000))
+            .and_then(|n| n.checked_div(10_000))
             .ok_or_else(|| error!(CasinoError::ArithmeticError))
     }
 }
