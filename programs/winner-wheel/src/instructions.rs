@@ -19,20 +19,6 @@ pub struct InitializeHouse<'info> {
     )]
     pub house: Account<'info, House>,
 
-    // TODO: use house as treasury account.
-    #[account(
-        init,
-        payer = authority,
-        space = 8 + Vault::LEN,
-        seeds = [
-            Vault::PREFIX,
-            b"treasury",
-            house.key().as_ref(),
-        ],
-        bump
-    )]
-    pub treasury: Account<'info, Vault>,
-
     #[account(
         init,
         payer = authority,
@@ -79,34 +65,26 @@ impl<'info> InitializeHouse<'info> {
             id,
             ctx.accounts.authority.key(),
             fee_basis_points,
-            ctx.accounts.treasury.key(),
             [ctx.accounts.vault_one.key(), ctx.accounts.vault_two.key()],
             bump,
         );
 
-        {
-            // Initialize vaults
-            *ctx.accounts.treasury = Vault {
-                house: ctx.accounts.house.key(),
-                bump: [*ctx.bumps.get("treasury").unwrap()],
-            };
+        let house_key = ctx.accounts.house.key();
 
-            *ctx.accounts.vault_one = Vault {
-                house: ctx.accounts.house.key(),
-                bump: [*ctx.bumps.get("vault_one").unwrap()],
-            };
+        *ctx.accounts.vault_one = Vault {
+            house: house_key,
+            bump: [*ctx.bumps.get("vault_one").unwrap()],
+        };
 
-            *ctx.accounts.vault_one = Vault {
-                house: ctx.accounts.house.key(),
-                bump: [*ctx.bumps.get("vault_two").unwrap()],
-            };
-        }
+        *ctx.accounts.vault_two = Vault {
+            house: house_key,
+            bump: [*ctx.bumps.get("vault_two").unwrap()],
+        };
 
-        // Add funds to treasury account.
         utils::transfer(
             funds,
             ctx.accounts.authority.to_account_info(),
-            ctx.accounts.treasury.to_account_info(),
+            ctx.accounts.house.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
         )?;
 
@@ -192,7 +170,7 @@ impl<'info> CreateBetProof<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimBet<'info> {
-    #[account(has_one = treasury)]
+    #[account(mut)]
     pub house: Account<'info, House>,
 
     #[account(
@@ -202,9 +180,6 @@ pub struct ClaimBet<'info> {
         has_one = house,
     )]
     pub bet_proof: Account<'info, BetProof>,
-
-    #[account(mut, has_one = house)]
-    pub treasury: Account<'info, Vault>,
 
     #[account(mut)]
     pub user: Signer<'info>,
@@ -226,7 +201,7 @@ impl<'info> ClaimBet<'info> {
 
         utils::pda_transfer(
             amount,
-            ctx.accounts.treasury.to_account_info(),
+            ctx.accounts.house.to_account_info(),
             ctx.accounts.user.to_account_info(),
         )?;
 
@@ -236,19 +211,8 @@ impl<'info> ClaimBet<'info> {
 
 #[derive(Accounts)]
 pub struct WithdrawTreasury<'info> {
-    #[account(has_one = authority)]
+    #[account(mut, has_one = authority)]
     pub house: Account<'info, House>,
-
-    #[account(
-        mut,
-        seeds = [
-            Vault::PREFIX,
-            b"treasury",
-            house.key().as_ref(),
-        ],
-        bump
-    )]
-    pub treasury: Account<'info, Vault>,
 
     #[account(mut)]
     pub receiver: SystemAccount<'info>,
@@ -260,7 +224,7 @@ impl<'info> WithdrawTreasury<'info> {
     pub fn handler(ctx: Context<Self>, amount: u64) -> Result<()> {
         utils::pda_transfer(
             amount,
-            ctx.accounts.treasury.to_account_info(),
+            ctx.accounts.house.to_account_info(),
             ctx.accounts.receiver.to_account_info(),
         )
     }

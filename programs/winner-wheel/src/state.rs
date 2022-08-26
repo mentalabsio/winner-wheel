@@ -41,8 +41,6 @@ pub struct House {
     pub version: u8,
     /// Numerical unique ID (range 0-65535)
     pub id: u16,
-    /// Account where the prizes are taken from.
-    pub treasury: Pubkey,
     /// Fee price in basis points. This will be charged on every bet proof creation for every
     /// account passed as fee vault.
     pub fee_basis_points: u16,
@@ -62,7 +60,6 @@ impl House {
         id: u16,
         authority: Pubkey,
         fee_basis_points: u16,
-        treasury_account: Pubkey,
         house_fee_vaults: [Pubkey; 2],
         bump: u8,
     ) -> Self {
@@ -71,7 +68,6 @@ impl House {
             id,
             authority,
             fee_basis_points,
-            treasury: treasury_account,
             fee_vaults: house_fee_vaults,
             bump: [bump],
             _reserved: [0u8; 64],

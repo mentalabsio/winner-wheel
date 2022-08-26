@@ -31,7 +31,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
   }) => {
     const house = findHouseAddress({ id, authority });
 
-    const treasury = findVaultAddress({ house, name: "treasury" });
     const vaultOne = findVaultAddress({ house, name: "vault_one" });
     const vaultTwo = findVaultAddress({ house, name: "vault_two" });
 
@@ -40,7 +39,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
       {
         house,
         authority,
-        treasury,
         vaultOne,
         vaultTwo,
 
@@ -83,12 +81,10 @@ export const WinnerWheelProgram = (connection: Connection) => {
     betProof: PublicKey;
   }): Promise<TransactionInstruction> => {
     const { house } = await BetProof.fetch(connection, betProof);
-    const treasury = findVaultAddress({ house, name: "treasury" });
     return claimBet({
       house,
       user,
       betProof,
-      treasury,
       systemProgram,
     });
   };
@@ -102,13 +98,12 @@ export const WinnerWheelProgram = (connection: Connection) => {
     amount: BN;
     receiver?: PublicKey;
   }): Promise<TransactionInstruction> => {
-    const { treasury, authority } = await House.fetch(connection, house);
+    const { authority } = await House.fetch(connection, house);
 
     return withdrawTreasury(
       { amount },
       {
         house,
-        treasury,
         receiver: receiver ?? authority,
         authority,
       }

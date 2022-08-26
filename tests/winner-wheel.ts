@@ -151,12 +151,10 @@ describe("winner-wheel", () => {
     // Signed by house authority.
     const txSig = await send(provider, [], ix);
 
-    const { treasury } = await House.fetch(connection, houseAddress);
-
     const treasuryBalanceChange = await getAccountBalanceChange(
       connection,
       txSig,
-      treasury
+      houseAddress
     );
 
     expect(treasuryBalanceChange).to.equal(-1e9);

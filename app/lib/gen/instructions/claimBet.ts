@@ -7,16 +7,14 @@ import { PROGRAM_ID } from "../programId"
 export interface ClaimBetAccounts {
   house: PublicKey
   betProof: PublicKey
-  treasury: PublicKey
   user: PublicKey
   systemProgram: PublicKey
 }
 
 export function claimBet(accounts: ClaimBetAccounts) {
   const keys: Array<AccountMeta> = [
-    { pubkey: accounts.house, isSigner: false, isWritable: false },
+    { pubkey: accounts.house, isSigner: false, isWritable: true },
     { pubkey: accounts.betProof, isSigner: false, isWritable: true },
-    { pubkey: accounts.treasury, isSigner: false, isWritable: true },
     { pubkey: accounts.user, isSigner: true, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ]
