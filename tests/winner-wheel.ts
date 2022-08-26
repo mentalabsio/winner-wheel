@@ -44,11 +44,6 @@ describe("winner-wheel", () => {
 
   const authority = provider.wallet;
 
-  // TODO: turn into PDAs;
-  const treasuryAccount = Keypair.generate();
-  const feeVaultOne = Keypair.generate();
-  const feeVaultTwo = Keypair.generate();
-
   // House doesn't exist yet, but we can find it's address anyway.
   const houseAddress = findHouseAddress({
     id: 0,
@@ -64,9 +59,6 @@ describe("winner-wheel", () => {
       feeBasisPoints: 125,
       // How many lamports to send from `authority`to `treasuryAccount`.
       initialFunds: new anchor.BN(100e9),
-      treasuryAccount: treasuryAccount.publicKey,
-      vaultOne: feeVaultOne.publicKey,
-      vaultTwo: feeVaultTwo.publicKey,
       authority: authority.publicKey,
     });
 
