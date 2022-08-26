@@ -32,8 +32,8 @@ export function initializeHouse(
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.house, isSigner: false, isWritable: true },
     { pubkey: accounts.treasuryAccount, isSigner: false, isWritable: true },
-    { pubkey: accounts.vaultOne, isSigner: false, isWritable: false },
-    { pubkey: accounts.vaultTwo, isSigner: false, isWritable: false },
+    { pubkey: accounts.vaultOne, isSigner: false, isWritable: true },
+    { pubkey: accounts.vaultTwo, isSigner: false, isWritable: true },
     { pubkey: accounts.authority, isSigner: true, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ]
