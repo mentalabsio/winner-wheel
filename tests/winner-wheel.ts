@@ -1,6 +1,8 @@
 import * as anchor from "@project-serum/anchor";
 import {
+  Connection,
   Keypair,
+  PublicKey,
   Signer,
   Transaction,
   TransactionInstruction,
@@ -36,6 +38,23 @@ const send = async (
 
     throw err;
   }
+};
+
+const getAccountBalanceChange = async (
+  connection: Connection,
+  txSig: string,
+  account: PublicKey
+): Promise<number> => {
+  const { transaction, meta } = await connection.getParsedTransaction(
+    txSig,
+    "confirmed"
+  );
+
+  const accountIdx = transaction.message.accountKeys.findIndex((acc) =>
+    acc.pubkey.equals(account)
+  );
+
+  return meta.postBalances[accountIdx] - meta.preBalances[accountIdx];
 };
 
 describe("winner-wheel", () => {
@@ -107,7 +126,7 @@ describe("winner-wheel", () => {
       house: houseAddress,
     });
 
-    const result = new BetResult.LoseAll();
+    const result = new BetResult.Triplicate();
 
     const ix = await program.createSetBetResultInstruction({
       result,
@@ -139,19 +158,14 @@ describe("winner-wheel", () => {
     });
 
     const txSig = await send(provider, [user], ix);
+
     console.log("Signature:", txSig);
 
-    const { transaction, meta } = await connection.getParsedTransaction(
+    const userAccountBalanceChange = await getAccountBalanceChange(
+      connection,
       txSig,
-      "confirmed"
+      user.publicKey
     );
-
-    const userAccountIdx = transaction.message.accountKeys.findIndex((acc) =>
-      acc.pubkey.equals(user.publicKey)
-    );
-
-    const userAccountBalanceChange =
-      meta.postBalances[userAccountIdx] - meta.preBalances[userAccountIdx];
 
     console.log(
       `[Claim] userAccountBalanceChange: ${
@@ -161,5 +175,25 @@ describe("winner-wheel", () => {
 
     const betProofAccount = await BetProof.fetch(connection, betProof);
     expect(betProofAccount).to.be.null;
+  });
+
+  it("should be able to withdraw funds to treasury account", async () => {
+    const ix = await program.createWithdrawTreasuryInstruction({
+      house: houseAddress,
+      amount: new anchor.BN(1e9),
+    });
+
+    // Signed by house authority.
+    const txSig = await send(provider, [], ix);
+
+    const { treasury } = await House.fetch(connection, houseAddress);
+
+    const treasuryBalanceChange = await getAccountBalanceChange(
+      connection,
+      txSig,
+      treasury
+    );
+
+    expect(treasuryBalanceChange).to.equal(-1e9);
   });
 });
