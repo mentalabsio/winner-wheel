@@ -10,10 +10,9 @@ pub fn transfer<'info>(
     from: AccountInfo<'info>,
     to: AccountInfo<'info>,
     system_program: AccountInfo<'info>,
-    seeds: &[&[u8]],
 ) -> Result<()> {
     let cpi_ctx = CpiContext::new(system_program, Transfer { from, to });
-    system_program::transfer(cpi_ctx.with_signer(&[seeds]), amount)
+    system_program::transfer(cpi_ctx, amount)
 }
 
 pub fn pda_transfer(amount: u64, from_pda: AccountInfo, to: AccountInfo) -> Result<()> {

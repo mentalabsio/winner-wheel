@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
 
-use crate::error::CasinoError;
 use crate::state::*;
 use crate::utils;
 
@@ -20,6 +19,7 @@ pub struct InitializeHouse<'info> {
     )]
     pub house: Account<'info, House>,
 
+    // TODO: use house as treasury account.
     #[account(
         init,
         payer = authority,
@@ -108,7 +108,6 @@ impl<'info> InitializeHouse<'info> {
             ctx.accounts.authority.to_account_info(),
             ctx.accounts.treasury.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
-            &[],
         )?;
 
         Ok(())
@@ -150,8 +149,22 @@ impl<'info> CreateBetProof<'info> {
         // Update amount to `amount - fee`
         let amount = ctx.accounts.charge_fees(amount)?;
 
-        *ctx.accounts.bet_proof =
-            BetProof::new(ctx.accounts.user.key(), ctx.accounts.house.key(), amount);
+        // this is probably random enough
+        let i = Clock::get()?.unix_timestamp / 14 % 4;
+
+        let result = match i {
+            1 => BetResult::LoseAll,
+            2 => BetResult::Duplicate,
+            3 => BetResult::Triplicate,
+            _ => BetResult::Retry,
+        };
+
+        *ctx.accounts.bet_proof = BetProof::new(
+            ctx.accounts.user.key(),
+            ctx.accounts.house.key(),
+            amount,
+            result,
+        );
 
         Ok(())
     }
@@ -164,7 +177,6 @@ impl<'info> CreateBetProof<'info> {
             self.user.to_account_info(),
             self.fee_vault_one.to_account_info(),
             self.system_program.to_account_info(),
-            &[],
         )?;
 
         utils::transfer(
@@ -172,37 +184,9 @@ impl<'info> CreateBetProof<'info> {
             self.user.to_account_info(),
             self.fee_vault_two.to_account_info(),
             self.system_program.to_account_info(),
-            &[],
         )?;
 
         Ok(amount - (fee * 2))
-    }
-}
-
-#[derive(Accounts)]
-pub struct SetBetResult<'info> {
-    #[account(
-        mut,
-        has_one = house,
-    )]
-    pub bet_proof: Account<'info, BetProof>,
-
-    #[account(
-        has_one = authority
-    )]
-    pub house: Account<'info, House>,
-
-    pub authority: Signer<'info>,
-}
-
-impl<'info> SetBetResult<'info> {
-    #[inline(always)]
-    pub fn handler(ctx: Context<Self>, result: BetResult) -> Result<()> {
-        match ctx.accounts.bet_proof.result {
-            Some(_) => err!(CasinoError::ResultIsAlreadySet),
-            #[allow(clippy::unit_arg)]
-            None => Ok(ctx.accounts.bet_proof.result = Some(result)),
-        }
     }
 }
 
@@ -233,9 +217,7 @@ impl<'info> ClaimBet<'info> {
     pub fn handler(ctx: Context<Self>) -> Result<()> {
         let bet_proof = &mut ctx.accounts.bet_proof;
 
-        require!(bet_proof.result.is_some(), CasinoError::ResultNotSet);
-
-        let amount = match bet_proof.result.unwrap() {
+        let amount = match bet_proof.result {
             BetResult::LoseAll => 0,
             BetResult::Retry => bet_proof.amount,
             BetResult::Duplicate => bet_proof.amount * 2,
@@ -320,8 +302,9 @@ pub struct SweepVaults<'info> {
 impl<'info> SweepVaults<'info> {
     pub fn handler(ctx: Context<Self>) -> Result<()> {
         let sweep = |vault: AccountInfo| -> Result<_> {
+            let balance = **vault.try_borrow_lamports()?;
             utils::pda_transfer(
-                **vault.try_borrow_lamports()?,
+                balance,
                 vault.to_account_info(),
                 ctx.accounts.receiver.to_account_info(),
             )
