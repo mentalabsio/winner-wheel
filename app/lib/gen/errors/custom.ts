@@ -1,4 +1,4 @@
-export type CustomError = ArithmeticError | ResultIsAlreadySet
+export type CustomError = ArithmeticError | ResultIsAlreadySet | ResultNotSet
 
 export class ArithmeticError extends Error {
   static readonly code = 6000
@@ -22,12 +22,25 @@ export class ResultIsAlreadySet extends Error {
   }
 }
 
+export class ResultNotSet extends Error {
+  static readonly code = 6002
+  readonly code = 6002
+  readonly name = "ResultNotSet"
+  readonly msg = "Bet result was not set yet."
+
+  constructor(readonly logs?: string[]) {
+    super("6002: Bet result was not set yet.")
+  }
+}
+
 export function fromCode(code: number, logs?: string[]): CustomError | null {
   switch (code) {
     case 6000:
       return new ArithmeticError(logs)
     case 6001:
       return new ResultIsAlreadySet(logs)
+    case 6002:
+      return new ResultNotSet(logs)
   }
 
   return null
