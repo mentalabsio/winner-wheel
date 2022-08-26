@@ -30,3 +30,15 @@ export const findBetProofAddress = ({
     [Buffer.from("betproof"), house.toBuffer(), user.toBuffer()],
     PROGRAM_ID
   )[0];
+
+export const findVaultAddress = ({
+  house,
+  name,
+}: {
+  house: PublicKey;
+  name: string;
+}): PublicKey =>
+  findProgramAddressSync(
+    [Buffer.from("vault"), Buffer.from(name), house.toBuffer()],
+    PROGRAM_ID
+  )[0];

@@ -2,7 +2,7 @@ import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import BN from "bn.js";
 import { House } from "./gen/accounts";
 import { createBetProof, initializeHouse } from "./gen/instructions";
-import { findBetProofAddress, findHouseAddress } from "./pda";
+import { findBetProofAddress, findHouseAddress, findVaultAddress } from "./pda";
 
 export const WinnerWheelProgram = (connection: Connection) => {
   const systemProgram = SystemProgram.programId;
@@ -12,19 +12,17 @@ export const WinnerWheelProgram = (connection: Connection) => {
     initialFunds,
     feeBasisPoints,
     authority,
-    vaultOne,
-    vaultTwo,
-    treasuryAccount,
   }: {
     id: number;
     initialFunds: BN;
     feeBasisPoints: number;
     authority: PublicKey;
-    vaultOne: PublicKey;
-    vaultTwo: PublicKey;
-    treasuryAccount: PublicKey;
   }) => {
     const house = findHouseAddress({ authority, id });
+
+    const treasuryAccount = findVaultAddress({ house, name: "treasury" });
+    const vaultOne = findVaultAddress({ house, name: "vault_one" });
+    const vaultTwo = findVaultAddress({ house, name: "vault_two" });
 
     const ix = initializeHouse(
       { feeBasisPoints, funds: initialFunds, id },
