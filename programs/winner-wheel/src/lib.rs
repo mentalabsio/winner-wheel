@@ -22,10 +22,7 @@ pub mod winner_wheel {
         instructions::InitializeHouse::handler(ctx, id, funds, fee_basis_points)
     }
 
-    pub fn create_bet_proof<'a, 'b, 'c, 'info>(
-        ctx: Context<'a, 'b, 'c, 'info, CreateBetProof<'info>>,
-        bet_value: u64,
-    ) -> Result<()> {
+    pub fn create_bet_proof(ctx: Context<CreateBetProof>, bet_value: u64) -> Result<()> {
         instructions::CreateBetProof::handler(ctx, bet_value)
     }
 
