@@ -4,4 +4,7 @@ use anchor_lang::prelude::*;
 pub enum CasinoError {
     #[msg("An arithmetic error occurred.")]
     ArithmeticError,
+
+    #[msg("Cannot change a result twice.")]
+    ResultIsAlreadySet,
 }

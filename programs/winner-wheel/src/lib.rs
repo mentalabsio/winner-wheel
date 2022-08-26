@@ -8,6 +8,7 @@ mod state;
 mod utils;
 
 use instructions::*;
+use state::*;
 
 #[program]
 pub mod winner_wheel {
@@ -24,6 +25,10 @@ pub mod winner_wheel {
 
     pub fn create_bet_proof(ctx: Context<CreateBetProof>, bet_value: u64) -> Result<()> {
         instructions::CreateBetProof::handler(ctx, bet_value)
+    }
+
+    pub fn set_bet_result(ctx: Context<SetBetResult>, result: BetResult) -> Result<()> {
+        instructions::SetBetResult::handler(ctx, result)
     }
 
     pub fn claim_bet(ctx: Context<ClaimBet>) -> Result<()> {

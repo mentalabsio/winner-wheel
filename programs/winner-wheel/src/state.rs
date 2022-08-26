@@ -4,7 +4,6 @@ use crate::error::CasinoError;
 
 #[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
 pub enum BetResult {
-    Unset,
     Retry,
     LoseAll,
     Duplicate,
@@ -17,13 +16,13 @@ pub struct BetProof {
     pub user: Pubkey,
     pub house: Pubkey,
     pub amount: u64,
-    pub result: BetResult,
+    pub result: Option<BetResult>,
     _reserved: [u8; 32],
 }
 
 impl BetProof {
     pub const PREFIX: &'static [u8] = b"betproof";
-    pub const LEN: usize = 1 + 32 + 32 + 8 + 1 + 32;
+    pub const LEN: usize = 1 + 32 + 32 + 8 + 2 + 32;
 
     pub fn new(user: Pubkey, house: Pubkey, amount: u64) -> Self {
         Self {
@@ -31,7 +30,7 @@ impl BetProof {
             house,
             amount,
             version: 0,
-            result: BetResult::Unset,
+            result: None,
             _reserved: [0; 32],
         }
     }

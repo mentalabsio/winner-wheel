@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+use crate::error::CasinoError;
 use crate::state::*;
 use crate::utils;
 
@@ -169,6 +170,31 @@ impl<'info> CreateBetProof<'info> {
         )?;
 
         Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct SetBetResult<'info> {
+    #[account(
+        mut,
+        has_one = house,
+    )]
+    pub bet_proof: Account<'info, BetProof>,
+
+    #[account(
+        has_one = authority
+    )]
+    pub house: Account<'info, House>,
+
+    pub authority: Signer<'info>,
+}
+
+impl<'info> SetBetResult<'info> {
+    pub fn handler(ctx: Context<Self>, result: BetResult) -> Result<()> {
+        match ctx.accounts.bet_proof.result {
+            Some(_) => err!(CasinoError::ResultIsAlreadySet),
+            None => Ok((*ctx.accounts.bet_proof).result = Some(result)),
+        }
     }
 }
 
