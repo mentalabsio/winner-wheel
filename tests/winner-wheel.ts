@@ -196,4 +196,21 @@ describe("winner-wheel", () => {
 
     expect(treasuryBalanceChange).to.equal(-1e9);
   });
+
+  it("should be able to sweep house fee vaults", async () => {
+    const ix = await program.createSweepVaultsInstruction({
+      house: houseAddress,
+    });
+
+    // Signed by house authority.
+    const txSig = await send(provider, [], ix);
+
+    const authorityBalanceChange = await getAccountBalanceChange(
+      connection,
+      txSig,
+      authority.publicKey
+    );
+
+    expect(authorityBalanceChange).to.be.greaterThan(0);
+  });
 });
