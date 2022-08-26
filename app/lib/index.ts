@@ -7,6 +7,7 @@ import {
 import BN from "bn.js";
 import { BetProof, House } from "./gen/accounts";
 import {
+  claimBet,
   createBetProof,
   initializeHouse,
   setBetResult,
@@ -95,9 +96,28 @@ export const WinnerWheelProgram = (connection: Connection) => {
     );
   };
 
+  const createClaimBetInstruction = async ({
+    user,
+    betProof,
+  }: {
+    user: PublicKey;
+    betProof: PublicKey;
+  }): Promise<TransactionInstruction> => {
+    const { house } = await BetProof.fetch(connection, betProof);
+    const treasuryAccount = findVaultAddress({ house, name: "treasury" });
+    return claimBet({
+      house,
+      user,
+      betProof,
+      treasuryAccount,
+      systemProgram,
+    });
+  };
+
   return {
     createHouseInstruction,
     createBetProofInstruction,
     createSetBetResultInstruction,
+    createClaimBetInstruction,
   };
 };
