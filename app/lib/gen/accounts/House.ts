@@ -9,7 +9,7 @@ export interface HouseFields {
   /** Numerical unique ID (range 0-65535) */
   id: number
   /** Account where the prizes are taken from. */
-  treasuryAccount: PublicKey
+  treasury: PublicKey
   /**
    * Fee price in basis points. This will be charged on every bet proof creation for every
    * account passed as fee vault.
@@ -28,7 +28,7 @@ export interface HouseJSON {
   /** Numerical unique ID (range 0-65535) */
   id: number
   /** Account where the prizes are taken from. */
-  treasuryAccount: string
+  treasury: string
   /**
    * Fee price in basis points. This will be charged on every bet proof creation for every
    * account passed as fee vault.
@@ -47,7 +47,7 @@ export class House {
   /** Numerical unique ID (range 0-65535) */
   readonly id: number
   /** Account where the prizes are taken from. */
-  readonly treasuryAccount: PublicKey
+  readonly treasury: PublicKey
   /**
    * Fee price in basis points. This will be charged on every bet proof creation for every
    * account passed as fee vault.
@@ -67,7 +67,7 @@ export class House {
   static readonly layout = borsh.struct([
     borsh.u8("version"),
     borsh.u16("id"),
-    borsh.publicKey("treasuryAccount"),
+    borsh.publicKey("treasury"),
     borsh.u16("feeBasisPoints"),
     borsh.publicKey("authority"),
     borsh.array(borsh.publicKey(), 2, "feeVaults"),
@@ -78,7 +78,7 @@ export class House {
   constructor(fields: HouseFields) {
     this.version = fields.version
     this.id = fields.id
-    this.treasuryAccount = fields.treasuryAccount
+    this.treasury = fields.treasury
     this.feeBasisPoints = fields.feeBasisPoints
     this.authority = fields.authority
     this.feeVaults = fields.feeVaults
@@ -127,7 +127,7 @@ export class House {
     return new House({
       version: dec.version,
       id: dec.id,
-      treasuryAccount: dec.treasuryAccount,
+      treasury: dec.treasury,
       feeBasisPoints: dec.feeBasisPoints,
       authority: dec.authority,
       feeVaults: dec.feeVaults,
@@ -140,7 +140,7 @@ export class House {
     return {
       version: this.version,
       id: this.id,
-      treasuryAccount: this.treasuryAccount.toString(),
+      treasury: this.treasury.toString(),
       feeBasisPoints: this.feeBasisPoints,
       authority: this.authority.toString(),
       feeVaults: this.feeVaults.map((item) => item.toString()),
@@ -153,7 +153,7 @@ export class House {
     return new House({
       version: obj.version,
       id: obj.id,
-      treasuryAccount: new PublicKey(obj.treasuryAccount),
+      treasury: new PublicKey(obj.treasury),
       feeBasisPoints: obj.feeBasisPoints,
       authority: new PublicKey(obj.authority),
       feeVaults: obj.feeVaults.map((item) => new PublicKey(item)),

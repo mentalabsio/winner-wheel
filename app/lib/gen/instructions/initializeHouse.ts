@@ -12,7 +12,7 @@ export interface InitializeHouseArgs {
 
 export interface InitializeHouseAccounts {
   house: PublicKey
-  treasuryAccount: PublicKey
+  treasury: PublicKey
   vaultOne: PublicKey
   vaultTwo: PublicKey
   authority: PublicKey
@@ -31,7 +31,7 @@ export function initializeHouse(
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.house, isSigner: false, isWritable: true },
-    { pubkey: accounts.treasuryAccount, isSigner: false, isWritable: true },
+    { pubkey: accounts.treasury, isSigner: false, isWritable: true },
     { pubkey: accounts.vaultOne, isSigner: false, isWritable: true },
     { pubkey: accounts.vaultTwo, isSigner: false, isWritable: true },
     { pubkey: accounts.authority, isSigner: true, isWritable: true },

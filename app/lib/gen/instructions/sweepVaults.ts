@@ -4,23 +4,23 @@ import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
-export interface ClaimBetAccounts {
+export interface SweepVaultsAccounts {
   house: PublicKey
-  betProof: PublicKey
-  treasury: PublicKey
-  user: PublicKey
-  systemProgram: PublicKey
+  vaultOne: PublicKey
+  vaultTwo: PublicKey
+  receiver: PublicKey
+  authority: PublicKey
 }
 
-export function claimBet(accounts: ClaimBetAccounts) {
+export function sweepVaults(accounts: SweepVaultsAccounts) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.house, isSigner: false, isWritable: false },
-    { pubkey: accounts.betProof, isSigner: false, isWritable: true },
-    { pubkey: accounts.treasury, isSigner: false, isWritable: true },
-    { pubkey: accounts.user, isSigner: true, isWritable: true },
-    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.vaultOne, isSigner: false, isWritable: true },
+    { pubkey: accounts.vaultTwo, isSigner: false, isWritable: true },
+    { pubkey: accounts.receiver, isSigner: false, isWritable: true },
+    { pubkey: accounts.authority, isSigner: true, isWritable: false },
   ]
-  const identifier = Buffer.from([60, 61, 185, 215, 180, 119, 174, 126])
+  const identifier = Buffer.from([179, 223, 60, 155, 238, 212, 69, 57])
   const data = identifier
   const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
   return ix
