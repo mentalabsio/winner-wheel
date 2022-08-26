@@ -3,37 +3,14 @@ import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh"
 
-export interface UnsetJSON {
-  kind: "Unset"
-}
-
-export class Unset {
-  static readonly discriminator = 0
-  static readonly kind = "Unset"
-  readonly discriminator = 0
-  readonly kind = "Unset"
-
-  toJSON(): UnsetJSON {
-    return {
-      kind: "Unset",
-    }
-  }
-
-  toEncodable() {
-    return {
-      Unset: {},
-    }
-  }
-}
-
 export interface RetryJSON {
   kind: "Retry"
 }
 
 export class Retry {
-  static readonly discriminator = 1
+  static readonly discriminator = 0
   static readonly kind = "Retry"
-  readonly discriminator = 1
+  readonly discriminator = 0
   readonly kind = "Retry"
 
   toJSON(): RetryJSON {
@@ -54,9 +31,9 @@ export interface LoseAllJSON {
 }
 
 export class LoseAll {
-  static readonly discriminator = 2
+  static readonly discriminator = 1
   static readonly kind = "LoseAll"
-  readonly discriminator = 2
+  readonly discriminator = 1
   readonly kind = "LoseAll"
 
   toJSON(): LoseAllJSON {
@@ -77,9 +54,9 @@ export interface DuplicateJSON {
 }
 
 export class Duplicate {
-  static readonly discriminator = 3
+  static readonly discriminator = 2
   static readonly kind = "Duplicate"
-  readonly discriminator = 3
+  readonly discriminator = 2
   readonly kind = "Duplicate"
 
   toJSON(): DuplicateJSON {
@@ -100,9 +77,9 @@ export interface TriplicateJSON {
 }
 
 export class Triplicate {
-  static readonly discriminator = 4
+  static readonly discriminator = 3
   static readonly kind = "Triplicate"
-  readonly discriminator = 4
+  readonly discriminator = 3
   readonly kind = "Triplicate"
 
   toJSON(): TriplicateJSON {
@@ -124,9 +101,6 @@ export function fromDecoded(obj: any): types.BetResultKind {
     throw new Error("Invalid enum object")
   }
 
-  if ("Unset" in obj) {
-    return new Unset()
-  }
   if ("Retry" in obj) {
     return new Retry()
   }
@@ -145,9 +119,6 @@ export function fromDecoded(obj: any): types.BetResultKind {
 
 export function fromJSON(obj: types.BetResultJSON): types.BetResultKind {
   switch (obj.kind) {
-    case "Unset": {
-      return new Unset()
-    }
     case "Retry": {
       return new Retry()
     }
@@ -165,7 +136,6 @@ export function fromJSON(obj: types.BetResultJSON): types.BetResultKind {
 
 export function layout(property?: string) {
   const ret = borsh.rustEnum([
-    borsh.struct([], "Unset"),
     borsh.struct([], "Retry"),
     borsh.struct([], "LoseAll"),
     borsh.struct([], "Duplicate"),
