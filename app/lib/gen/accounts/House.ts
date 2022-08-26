@@ -5,6 +5,7 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import { PROGRAM_ID } from "../programId"
 
 export interface HouseFields {
+  version: number
   /** Numerical unique ID (range 0-65535) */
   id: number
   /** Account where the prizes are taken from. */
@@ -23,6 +24,7 @@ export interface HouseFields {
 }
 
 export interface HouseJSON {
+  version: number
   /** Numerical unique ID (range 0-65535) */
   id: number
   /** Account where the prizes are taken from. */
@@ -41,6 +43,7 @@ export interface HouseJSON {
 }
 
 export class House {
+  readonly version: number
   /** Numerical unique ID (range 0-65535) */
   readonly id: number
   /** Account where the prizes are taken from. */
@@ -62,6 +65,7 @@ export class House {
   ])
 
   static readonly layout = borsh.struct([
+    borsh.u8("version"),
     borsh.u16("id"),
     borsh.publicKey("treasuryAccount"),
     borsh.u16("feeBasisPoints"),
@@ -72,6 +76,7 @@ export class House {
   ])
 
   constructor(fields: HouseFields) {
+    this.version = fields.version
     this.id = fields.id
     this.treasuryAccount = fields.treasuryAccount
     this.feeBasisPoints = fields.feeBasisPoints
@@ -120,6 +125,7 @@ export class House {
     const dec = House.layout.decode(data.slice(8))
 
     return new House({
+      version: dec.version,
       id: dec.id,
       treasuryAccount: dec.treasuryAccount,
       feeBasisPoints: dec.feeBasisPoints,
@@ -132,6 +138,7 @@ export class House {
 
   toJSON(): HouseJSON {
     return {
+      version: this.version,
       id: this.id,
       treasuryAccount: this.treasuryAccount.toString(),
       feeBasisPoints: this.feeBasisPoints,
@@ -144,6 +151,7 @@ export class House {
 
   static fromJSON(obj: HouseJSON): House {
     return new House({
+      version: obj.version,
       id: obj.id,
       treasuryAccount: new PublicKey(obj.treasuryAccount),
       feeBasisPoints: obj.feeBasisPoints,

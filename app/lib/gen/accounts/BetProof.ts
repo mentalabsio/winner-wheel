@@ -5,6 +5,7 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import { PROGRAM_ID } from "../programId"
 
 export interface BetProofFields {
+  version: number
   user: PublicKey
   house: PublicKey
   amount: BN
@@ -13,6 +14,7 @@ export interface BetProofFields {
 }
 
 export interface BetProofJSON {
+  version: number
   user: string
   house: string
   amount: string
@@ -21,6 +23,7 @@ export interface BetProofJSON {
 }
 
 export class BetProof {
+  readonly version: number
   readonly user: PublicKey
   readonly house: PublicKey
   readonly amount: BN
@@ -32,6 +35,7 @@ export class BetProof {
   ])
 
   static readonly layout = borsh.struct([
+    borsh.u8("version"),
     borsh.publicKey("user"),
     borsh.publicKey("house"),
     borsh.u64("amount"),
@@ -40,6 +44,7 @@ export class BetProof {
   ])
 
   constructor(fields: BetProofFields) {
+    this.version = fields.version
     this.user = fields.user
     this.house = fields.house
     this.amount = fields.amount
@@ -89,6 +94,7 @@ export class BetProof {
     const dec = BetProof.layout.decode(data.slice(8))
 
     return new BetProof({
+      version: dec.version,
       user: dec.user,
       house: dec.house,
       amount: dec.amount,
@@ -99,6 +105,7 @@ export class BetProof {
 
   toJSON(): BetProofJSON {
     return {
+      version: this.version,
       user: this.user.toString(),
       house: this.house.toString(),
       amount: this.amount.toString(),
@@ -109,6 +116,7 @@ export class BetProof {
 
   static fromJSON(obj: BetProofJSON): BetProof {
     return new BetProof({
+      version: obj.version,
       user: new PublicKey(obj.user),
       house: new PublicKey(obj.house),
       amount: new BN(obj.amount),
