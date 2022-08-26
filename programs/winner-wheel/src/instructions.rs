@@ -66,6 +66,7 @@ pub struct InitializeHouse<'info> {
 }
 
 impl<'info> InitializeHouse<'info> {
+    #[inline(always)]
     pub fn handler(
         ctx: Context<InitializeHouse>,
         id: u16,
@@ -107,6 +108,7 @@ impl<'info> InitializeHouse<'info> {
             ctx.accounts.authority.to_account_info(),
             ctx.accounts.treasury_account.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
+            &[],
         )?;
 
         Ok(())
@@ -143,8 +145,10 @@ pub struct CreateBetProof<'info> {
 }
 
 impl<'info> CreateBetProof<'info> {
+    #[inline(always)]
     pub fn handler(ctx: Context<Self>, amount: u64) -> Result<()> {
-        ctx.accounts.charge_fees(amount)?;
+        // Update amount to `amount - fee`
+        let amount = ctx.accounts.charge_fees(amount)?;
 
         *ctx.accounts.bet_proof =
             BetProof::new(ctx.accounts.user.key(), ctx.accounts.house.key(), amount);
@@ -152,7 +156,7 @@ impl<'info> CreateBetProof<'info> {
         Ok(())
     }
 
-    fn charge_fees(&self, amount: u64) -> Result<()> {
+    fn charge_fees(&mut self, amount: u64) -> Result<u64> {
         let fee = self.house.calculate_fee(amount)?;
 
         utils::transfer(
@@ -160,6 +164,7 @@ impl<'info> CreateBetProof<'info> {
             self.user.to_account_info(),
             self.fee_vault_one.to_account_info(),
             self.system_program.to_account_info(),
+            &[],
         )?;
 
         utils::transfer(
@@ -167,9 +172,10 @@ impl<'info> CreateBetProof<'info> {
             self.user.to_account_info(),
             self.fee_vault_two.to_account_info(),
             self.system_program.to_account_info(),
+            &[],
         )?;
 
-        Ok(())
+        Ok(amount - (fee * 2))
     }
 }
 
@@ -190,32 +196,58 @@ pub struct SetBetResult<'info> {
 }
 
 impl<'info> SetBetResult<'info> {
+    #[inline(always)]
     pub fn handler(ctx: Context<Self>, result: BetResult) -> Result<()> {
         match ctx.accounts.bet_proof.result {
             Some(_) => err!(CasinoError::ResultIsAlreadySet),
-            None => Ok((*ctx.accounts.bet_proof).result = Some(result)),
+            #[allow(clippy::unit_arg)]
+            None => Ok(ctx.accounts.bet_proof.result = Some(result)),
         }
     }
 }
 
 #[derive(Accounts)]
 pub struct ClaimBet<'info> {
-    #[account(address = bet_proof.house)]
+    #[account(has_one = treasury_account)]
     pub house: Account<'info, House>,
 
     #[account(
         mut,
         close = user,
         has_one = user,
+        has_one = house,
     )]
     pub bet_proof: Account<'info, BetProof>,
 
+    #[account(mut, has_one = house)]
+    pub treasury_account: Account<'info, Vault>,
+
     #[account(mut)]
     pub user: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> ClaimBet<'info> {
-    pub fn handler(_ctx: Context<Self>) -> Result<()> {
+    #[inline(always)]
+    pub fn handler(ctx: Context<Self>) -> Result<()> {
+        let bet_proof = &mut ctx.accounts.bet_proof;
+
+        require!(bet_proof.result.is_some(), CasinoError::ResultNotSet);
+
+        let amount = match bet_proof.result.unwrap() {
+            BetResult::LoseAll => 0,
+            BetResult::Retry => bet_proof.amount,
+            BetResult::Duplicate => bet_proof.amount * 2,
+            BetResult::Triplicate => bet_proof.amount * 3,
+        };
+
+        utils::pda_transfer(
+            amount,
+            ctx.accounts.treasury_account.to_account_info(),
+            ctx.accounts.user.to_account_info(),
+        )?;
+
         Ok(())
     }
 }

@@ -7,4 +7,7 @@ pub enum CasinoError {
 
     #[msg("Cannot change a result twice.")]
     ResultIsAlreadySet,
+
+    #[msg("Bet result was not set yet.")]
+    ResultNotSet,
 }
