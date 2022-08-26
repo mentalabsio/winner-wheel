@@ -31,7 +31,7 @@ pub struct InitializeHouse<'info> {
         ],
         bump
     )]
-    pub treasury_account: Account<'info, Vault>,
+    pub treasury: Account<'info, Vault>,
 
     #[account(
         init,
@@ -79,16 +79,16 @@ impl<'info> InitializeHouse<'info> {
             id,
             ctx.accounts.authority.key(),
             fee_basis_points,
-            ctx.accounts.treasury_account.key(),
+            ctx.accounts.treasury.key(),
             [ctx.accounts.vault_one.key(), ctx.accounts.vault_two.key()],
             bump,
         );
 
         {
             // Initialize vaults
-            *ctx.accounts.treasury_account = Vault {
+            *ctx.accounts.treasury = Vault {
                 house: ctx.accounts.house.key(),
-                bump: [*ctx.bumps.get("treasury_account").unwrap()],
+                bump: [*ctx.bumps.get("treasury").unwrap()],
             };
 
             *ctx.accounts.vault_one = Vault {
@@ -106,7 +106,7 @@ impl<'info> InitializeHouse<'info> {
         utils::transfer(
             funds,
             ctx.accounts.authority.to_account_info(),
-            ctx.accounts.treasury_account.to_account_info(),
+            ctx.accounts.treasury.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
             &[],
         )?;
@@ -208,7 +208,7 @@ impl<'info> SetBetResult<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimBet<'info> {
-    #[account(has_one = treasury_account)]
+    #[account(has_one = treasury)]
     pub house: Account<'info, House>,
 
     #[account(
@@ -220,7 +220,7 @@ pub struct ClaimBet<'info> {
     pub bet_proof: Account<'info, BetProof>,
 
     #[account(mut, has_one = house)]
-    pub treasury_account: Account<'info, Vault>,
+    pub treasury: Account<'info, Vault>,
 
     #[account(mut)]
     pub user: Signer<'info>,
@@ -244,7 +244,7 @@ impl<'info> ClaimBet<'info> {
 
         utils::pda_transfer(
             amount,
-            ctx.accounts.treasury_account.to_account_info(),
+            ctx.accounts.treasury.to_account_info(),
             ctx.accounts.user.to_account_info(),
         )?;
 
