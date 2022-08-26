@@ -66,6 +66,8 @@ export const WinnerWheelProgram = (connection: Connection) => {
         systemProgram,
       }
     );
+
+    return ix;
   };
 
   return {
