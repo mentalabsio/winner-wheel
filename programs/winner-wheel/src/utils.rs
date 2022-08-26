@@ -3,6 +3,8 @@ use anchor_lang::{
     system_program::{self, Transfer},
 };
 
+use crate::error::CasinoError;
+
 pub fn transfer<'info>(
     amount: u64,
     from: AccountInfo<'info>,
@@ -19,7 +21,15 @@ pub fn pda_transfer<'info>(
     from_pda: AccountInfo<'info>,
     to: AccountInfo<'info>,
 ) -> Result<()> {
-    **from_pda.try_borrow_mut_lamports()? -= amount;
-    **to.try_borrow_mut_lamports()? += amount;
+    **from_pda.try_borrow_mut_lamports()? = from_pda
+        .lamports()
+        .checked_sub(amount)
+        .ok_or(CasinoError::ArithmeticError)?;
+
+    **to.try_borrow_mut_lamports()? = to
+        .lamports()
+        .checked_add(amount)
+        .ok_or(CasinoError::ArithmeticError)?;
+
     Ok(())
 }
