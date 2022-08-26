@@ -16,11 +16,7 @@ pub fn transfer<'info>(
     system_program::transfer(cpi_ctx.with_signer(&[seeds]), amount)
 }
 
-pub fn pda_transfer<'info>(
-    amount: u64,
-    from_pda: AccountInfo<'info>,
-    to: AccountInfo<'info>,
-) -> Result<()> {
+pub fn pda_transfer(amount: u64, from_pda: AccountInfo, to: AccountInfo) -> Result<()> {
     **from_pda.try_borrow_mut_lamports()? = from_pda
         .lamports()
         .checked_sub(amount)
