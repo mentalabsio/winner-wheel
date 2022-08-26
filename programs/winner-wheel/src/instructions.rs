@@ -19,15 +19,44 @@ pub struct InitializeHouse<'info> {
     )]
     pub house: Account<'info, House>,
 
-    #[account(mut)]
-    // TODO: Turn into PDA
-    pub treasury_account: SystemAccount<'info>,
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + Vault::LEN,
+        seeds = [
+            Vault::PREFIX,
+            b"treasury",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub treasury_account: Account<'info, Vault>,
 
-    // TODO: Turn into PDA
-    pub vault_one: SystemAccount<'info>,
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + Vault::LEN,
+        seeds = [
+            Vault::PREFIX,
+            b"vault_one",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub vault_one: Account<'info, Vault>,
 
-    // TODO: Turn into PDA
-    pub vault_two: SystemAccount<'info>,
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + Vault::LEN,
+        seeds = [
+            Vault::PREFIX,
+            b"vault_two",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub vault_two: Account<'info, Vault>,
 
     #[account(mut)]
     pub authority: Signer<'info>,
@@ -53,6 +82,25 @@ impl<'info> InitializeHouse<'info> {
             bump,
         );
 
+        {
+            // Initialize vaults
+            *ctx.accounts.treasury_account = Vault {
+                house: ctx.accounts.house.key(),
+                bump: [*ctx.bumps.get("treasury_account").unwrap()],
+            };
+
+            *ctx.accounts.vault_one = Vault {
+                house: ctx.accounts.house.key(),
+                bump: [*ctx.bumps.get("vault_one").unwrap()],
+            };
+
+            *ctx.accounts.vault_one = Vault {
+                house: ctx.accounts.house.key(),
+                bump: [*ctx.bumps.get("vault_two").unwrap()],
+            };
+        }
+
+        // Add funds to treasury account.
         utils::transfer(
             funds,
             ctx.accounts.authority.to_account_info(),
@@ -82,10 +130,10 @@ pub struct CreateBetProof<'info> {
     pub bet_proof: Account<'info, BetProof>,
 
     #[account(mut, address = house.fee_vaults[0])]
-    pub fee_vault_one: SystemAccount<'info>,
+    pub fee_vault_one: Account<'info, Vault>,
 
     #[account(mut, address = house.fee_vaults[1])]
-    pub fee_vault_two: SystemAccount<'info>,
+    pub fee_vault_two: Account<'info, Vault>,
 
     #[account(mut)]
     pub user: Signer<'info>,
@@ -97,12 +145,8 @@ impl<'info> CreateBetProof<'info> {
     pub fn handler(ctx: Context<Self>, amount: u64) -> Result<()> {
         ctx.accounts.charge_fees(amount)?;
 
-        *ctx.accounts.bet_proof = BetProof::new(
-            ctx.accounts.user.key(),
-            ctx.accounts.house.key(),
-            amount,
-            BetResult::Unset,
-        );
+        *ctx.accounts.bet_proof =
+            BetProof::new(ctx.accounts.user.key(), ctx.accounts.house.key(), amount);
 
         Ok(())
     }

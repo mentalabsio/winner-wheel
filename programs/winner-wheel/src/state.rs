@@ -25,13 +25,13 @@ impl BetProof {
     pub const PREFIX: &'static [u8] = b"betproof";
     pub const LEN: usize = 1 + 32 + 32 + 8 + 1 + 32;
 
-    pub fn new(user: Pubkey, house: Pubkey, amount: u64, result: BetResult) -> Self {
+    pub fn new(user: Pubkey, house: Pubkey, amount: u64) -> Self {
         Self {
-            version: 0,
             user,
             house,
             amount,
-            result,
+            version: 0,
+            result: BetResult::Unset,
             _reserved: [0; 32],
         }
     }
@@ -88,4 +88,15 @@ impl House {
             .and_then(|n| n.checked_div(10_000))
             .ok_or_else(|| error!(CasinoError::ArithmeticError))
     }
+}
+
+#[account]
+pub struct Vault {
+    pub house: Pubkey,
+    pub bump: [u8; 1],
+}
+
+impl Vault {
+    pub const PREFIX: &'static [u8] = b"vault";
+    pub const LEN: usize = 32 + 1;
 }
