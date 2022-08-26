@@ -10,7 +10,7 @@ import {
   claimBet,
   createBetProof,
   initializeHouse,
-  setBetResult,
+  sweepVaults,
   withdrawTreasury,
 } from "./gen/instructions";
 import { BetResultKind } from "./gen/types";
@@ -137,11 +137,33 @@ export const WinnerWheelProgram = (connection: Connection) => {
     );
   };
 
+  const createSweepVaultsInstruction = async ({
+    house,
+    receiver,
+  }: {
+    house: PublicKey;
+    receiver?: PublicKey;
+  }): Promise<TransactionInstruction> => {
+    const {
+      feeVaults: [vaultOne, vaultTwo],
+      authority,
+    } = await House.fetch(connection, house);
+
+    return sweepVaults({
+      house,
+      vaultOne,
+      vaultTwo,
+      authority,
+      receiver: receiver ?? authority,
+    });
+  };
+
   return {
     createHouseInstruction,
     createBetProofInstruction,
     createSetBetResultInstruction,
     createClaimBetInstruction,
     createWithdrawTreasuryInstruction,
+    createSweepVaultsInstruction,
   };
 };
