@@ -11,6 +11,7 @@ import {
   createBetProof,
   initializeHouse,
   setBetResult,
+  withdrawTreasury,
 } from "./gen/instructions";
 import { BetResultKind } from "./gen/types";
 import { findBetProofAddress, findHouseAddress, findVaultAddress } from "./pda";
@@ -31,7 +32,7 @@ export const WinnerWheelProgram = (connection: Connection) => {
   }) => {
     const house = findHouseAddress({ authority, id });
 
-    const treasuryAccount = findVaultAddress({ house, name: "treasury" });
+    const treasury = findVaultAddress({ house, name: "treasury" });
     const vaultOne = findVaultAddress({ house, name: "vault_one" });
     const vaultTwo = findVaultAddress({ house, name: "vault_two" });
 
@@ -40,7 +41,7 @@ export const WinnerWheelProgram = (connection: Connection) => {
       {
         house,
         authority,
-        treasuryAccount,
+        treasury,
         vaultOne,
         vaultTwo,
 
@@ -104,14 +105,36 @@ export const WinnerWheelProgram = (connection: Connection) => {
     betProof: PublicKey;
   }): Promise<TransactionInstruction> => {
     const { house } = await BetProof.fetch(connection, betProof);
-    const treasuryAccount = findVaultAddress({ house, name: "treasury" });
+    const treasury = findVaultAddress({ house, name: "treasury" });
     return claimBet({
       house,
       user,
       betProof,
-      treasuryAccount,
+      treasury,
       systemProgram,
     });
+  };
+
+  const createWithdrawTreasuryInstruction = async ({
+    house,
+    amount,
+    receiver,
+  }: {
+    house: PublicKey;
+    amount: BN;
+    receiver?: PublicKey;
+  }): Promise<TransactionInstruction> => {
+    const { treasury, authority } = await House.fetch(connection, house);
+
+    return withdrawTreasury(
+      { amount },
+      {
+        house,
+        treasury,
+        receiver: receiver ?? authority,
+        authority,
+      }
+    );
   };
 
   return {
@@ -119,5 +142,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
     createBetProofInstruction,
     createSetBetResultInstruction,
     createClaimBetInstruction,
+    createWithdrawTreasuryInstruction,
   };
 };
