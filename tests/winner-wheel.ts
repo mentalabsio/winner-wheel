@@ -21,12 +21,15 @@ const send = async (
     const tx = new Transaction().add(...ixs);
 
     // provider.wallet automatically signs.
-    const sig = await provider.sendAndConfirm(tx, signers);
+    const sig = await provider.sendAndConfirm(tx, signers, {
+      commitment: "confirmed",
+    });
 
     return sig;
   } catch (err) {
     const parsed = fromTxError(err);
 
+    console.log(err.logs);
     if (parsed !== null) {
       throw parsed;
     }
@@ -74,7 +77,6 @@ describe("winner-wheel", () => {
 
     const houseAccount = await House.fetch(connection, houseAddress);
 
-    console.log(houseAccount.toJSON());
     expect(houseAccount.feeBasisPoints).to.equal(125);
   });
 
@@ -85,7 +87,9 @@ describe("winner-wheel", () => {
       betValue: new anchor.BN(0.5e9),
     });
 
-    await send(provider, [user], ix);
+    const txSig = await send(provider, [user], ix);
+
+    console.log("Signature:", txSig);
 
     const betProof = findBetProofAddress({
       user: user.publicKey,
@@ -103,20 +107,59 @@ describe("winner-wheel", () => {
       house: houseAddress,
     });
 
+    const result = new BetResult.LoseAll();
+
     const ix = await program.createSetBetResultInstruction({
-      result: new BetResult.Triplicate(),
+      result,
       betProof,
       houseAuthority: authority.publicKey,
     });
 
-    await send(provider, [], ix);
+    await send(
+      provider,
+      [
+        /* must be signed by house authority */
+      ],
+      ix
+    );
 
     const betProofAccount = await BetProof.fetch(connection, betProof);
-
-    expect(betProofAccount.result?.kind).to.equal("Triplicate");
+    expect(betProofAccount.result).to.eql(result);
   });
 
-  it.skip("should be able to claim a bet", async () => {
-    throw "Unimplemented";
+  it("should be able to claim a bet", async () => {
+    const betProof = findBetProofAddress({
+      user: user.publicKey,
+      house: houseAddress,
+    });
+
+    const ix = await program.createClaimBetInstruction({
+      user: user.publicKey,
+      betProof,
+    });
+
+    const txSig = await send(provider, [user], ix);
+    console.log("Signature:", txSig);
+
+    const { transaction, meta } = await connection.getParsedTransaction(
+      txSig,
+      "confirmed"
+    );
+
+    const userAccountIdx = transaction.message.accountKeys.findIndex((acc) =>
+      acc.pubkey.equals(user.publicKey)
+    );
+
+    const userAccountBalanceChange =
+      meta.postBalances[userAccountIdx] - meta.preBalances[userAccountIdx];
+
+    console.log(
+      `[Claim] userAccountBalanceChange: ${
+        userAccountBalanceChange / 1_000_000_000
+      } $SOL`
+    );
+
+    const betProofAccount = await BetProof.fetch(connection, betProof);
+    expect(betProofAccount).to.be.null;
   });
 });
