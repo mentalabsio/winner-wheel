@@ -34,4 +34,12 @@ pub mod winner_wheel {
     pub fn claim_bet(ctx: Context<ClaimBet>) -> Result<()> {
         instructions::ClaimBet::handler(ctx)
     }
+
+    pub fn withdraw_treasury(ctx: Context<WithdrawTreasury>, amount: u64) -> Result<()> {
+        instructions::WithdrawTreasury::handler(ctx, amount)
+    }
+
+    pub fn sweep_vaults(ctx: Context<SweepVaults>) -> Result<()> {
+        instructions::SweepVaults::handler(ctx)
+    }
 }

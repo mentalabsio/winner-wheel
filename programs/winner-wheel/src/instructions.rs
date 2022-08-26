@@ -251,3 +251,85 @@ impl<'info> ClaimBet<'info> {
         Ok(())
     }
 }
+
+#[derive(Accounts)]
+pub struct WithdrawTreasury<'info> {
+    #[account(has_one = authority)]
+    pub house: Account<'info, House>,
+
+    #[account(
+        mut,
+        seeds = [
+            Vault::PREFIX,
+            b"treasury",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub treasury: Account<'info, Vault>,
+
+    #[account(mut)]
+    pub receiver: SystemAccount<'info>,
+
+    pub authority: Signer<'info>,
+}
+
+impl<'info> WithdrawTreasury<'info> {
+    pub fn handler(ctx: Context<Self>, amount: u64) -> Result<()> {
+        utils::pda_transfer(
+            amount,
+            ctx.accounts.treasury.to_account_info(),
+            ctx.accounts.receiver.to_account_info(),
+        )
+    }
+}
+
+#[derive(Accounts)]
+pub struct SweepVaults<'info> {
+    #[account(has_one = authority)]
+    pub house: Account<'info, House>,
+
+    #[account(
+        mut,
+        seeds = [
+            Vault::PREFIX,
+            b"vault_one",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub vault_one: Account<'info, Vault>,
+
+    #[account(
+        mut,
+        seeds = [
+            Vault::PREFIX,
+            b"vault_two",
+            house.key().as_ref(),
+        ],
+        bump
+    )]
+    pub vault_two: Account<'info, Vault>,
+
+    #[account(mut)]
+    pub receiver: SystemAccount<'info>,
+
+    pub authority: Signer<'info>,
+}
+
+impl<'info> SweepVaults<'info> {
+    pub fn handler(ctx: Context<Self>) -> Result<()> {
+        let sweep = |vault: AccountInfo| -> Result<_> {
+            utils::pda_transfer(
+                **vault.try_borrow_lamports()?,
+                vault.to_account_info(),
+                ctx.accounts.receiver.to_account_info(),
+            )
+        };
+
+        sweep(ctx.accounts.vault_one.to_account_info())?;
+        sweep(ctx.accounts.vault_two.to_account_info())?;
+
+        Ok(())
+    }
+}
