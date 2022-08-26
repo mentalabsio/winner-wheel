@@ -9,6 +9,7 @@ import { expect } from "chai";
 import { WinnerWheelProgram } from "../app/lib";
 import { BetProof, House } from "../app/lib/gen/accounts";
 import { fromTxError } from "../app/lib/gen/errors";
+import { BetResult } from "../app/lib/gen/types";
 import { findBetProofAddress, findHouseAddress } from "../app/lib/pda";
 
 const send = async (
@@ -43,11 +44,18 @@ describe("winner-wheel", () => {
   const program = WinnerWheelProgram(connection);
 
   const authority = provider.wallet;
+  const user = Keypair.generate();
 
   // House doesn't exist yet, but we can find it's address anyway.
   const houseAddress = findHouseAddress({
     id: 0,
     authority: authority.publicKey,
+  });
+
+  before(async () => {
+    await connection.confirmTransaction(
+      await connection.requestAirdrop(user.publicKey, 1e9)
+    );
   });
 
   it("should be able to initialize a house", async () => {
@@ -71,12 +79,6 @@ describe("winner-wheel", () => {
   });
 
   it("should be able to create a bet proof", async () => {
-    const user = Keypair.generate();
-
-    await connection.confirmTransaction(
-      await connection.requestAirdrop(user.publicKey, 1e9)
-    );
-
     const ix = await program.createBetProofInstruction({
       house: houseAddress,
       user: user.publicKey,
@@ -92,11 +94,26 @@ describe("winner-wheel", () => {
 
     const betProofAccount = await BetProof.fetch(connection, betProof);
 
-    expect(betProofAccount.result.kind).to.equal("Unset");
+    expect(betProofAccount.result).to.equal(null);
   });
 
-  it.skip("should be able to set a bet's result", async () => {
-    throw "Unimplemented";
+  it("should be able to set a bet's result", async () => {
+    const betProof = findBetProofAddress({
+      user: user.publicKey,
+      house: houseAddress,
+    });
+
+    const ix = await program.createSetBetResultInstruction({
+      result: new BetResult.Triplicate(),
+      betProof,
+      houseAuthority: authority.publicKey,
+    });
+
+    await send(provider, [], ix);
+
+    const betProofAccount = await BetProof.fetch(connection, betProof);
+
+    expect(betProofAccount.result?.kind).to.equal("Triplicate");
   });
 
   it.skip("should be able to claim a bet", async () => {
