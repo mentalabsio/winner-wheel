@@ -13,7 +13,6 @@ import {
   sweepVaults,
   withdrawTreasury,
 } from "./gen/instructions";
-import { BetResultKind } from "./gen/types";
 import { findBetProofAddress, findHouseAddress, findVaultAddress } from "./pda";
 
 export const WinnerWheelProgram = (connection: Connection) => {
@@ -30,7 +29,7 @@ export const WinnerWheelProgram = (connection: Connection) => {
     feeBasisPoints: number;
     authority: PublicKey;
   }) => {
-    const house = findHouseAddress({ authority, id });
+    const house = findHouseAddress({ id, authority });
 
     const treasury = findVaultAddress({ house, name: "treasury" });
     const vaultOne = findVaultAddress({ house, name: "vault_one" });
@@ -72,27 +71,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
         feeVaultOne,
         feeVaultTwo,
         systemProgram,
-      }
-    );
-  };
-
-  const createSetBetResultInstruction = async ({
-    result,
-    betProof,
-    houseAuthority,
-  }: {
-    result: BetResultKind;
-    betProof: PublicKey;
-    houseAuthority: PublicKey;
-  }): Promise<TransactionInstruction> => {
-    const { house } = await BetProof.fetch(connection, betProof);
-
-    return setBetResult(
-      { result },
-      {
-        house,
-        betProof,
-        authority: houseAuthority,
       }
     );
   };
@@ -161,7 +139,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
   return {
     createHouseInstruction,
     createBetProofInstruction,
-    createSetBetResultInstruction,
     createClaimBetInstruction,
     createWithdrawTreasuryInstruction,
     createSweepVaultsInstruction,

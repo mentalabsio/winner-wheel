@@ -11,7 +11,6 @@ import { expect } from "chai";
 import { WinnerWheelProgram } from "../app/lib";
 import { BetProof, House } from "../app/lib/gen/accounts";
 import { fromTxError } from "../app/lib/gen/errors";
-import { BetResult } from "../app/lib/gen/types";
 import { findBetProofAddress, findHouseAddress } from "../app/lib/pda";
 
 const send = async (
@@ -75,6 +74,7 @@ describe("winner-wheel", () => {
   });
 
   before(async () => {
+    // Fund user wallet.
     await connection.confirmTransaction(
       await connection.requestAirdrop(user.publicKey, 1e9)
     );
@@ -106,9 +106,7 @@ describe("winner-wheel", () => {
       betValue: new anchor.BN(0.5e9),
     });
 
-    const txSig = await send(provider, [user], ix);
-
-    console.log("Signature:", txSig);
+    await send(provider, [user], ix);
 
     const betProof = findBetProofAddress({
       user: user.publicKey,
@@ -117,33 +115,7 @@ describe("winner-wheel", () => {
 
     const betProofAccount = await BetProof.fetch(connection, betProof);
 
-    expect(betProofAccount.result).to.equal(null);
-  });
-
-  it("should be able to set a bet's result", async () => {
-    const betProof = findBetProofAddress({
-      user: user.publicKey,
-      house: houseAddress,
-    });
-
-    const result = new BetResult.Triplicate();
-
-    const ix = await program.createSetBetResultInstruction({
-      result,
-      betProof,
-      houseAuthority: authority.publicKey,
-    });
-
-    await send(
-      provider,
-      [
-        /* must be signed by house authority */
-      ],
-      ix
-    );
-
-    const betProofAccount = await BetProof.fetch(connection, betProof);
-    expect(betProofAccount.result).to.eql(result);
+    console.log(betProofAccount.toJSON());
   });
 
   it("should be able to claim a bet", async () => {
@@ -159,25 +131,18 @@ describe("winner-wheel", () => {
 
     const txSig = await send(provider, [user], ix);
 
-    console.log("Signature:", txSig);
-
     const userAccountBalanceChange = await getAccountBalanceChange(
       connection,
       txSig,
       user.publicKey
     );
-
-    console.log(
-      `[Claim] userAccountBalanceChange: ${
-        userAccountBalanceChange / 1_000_000_000
-      } $SOL`
-    );
+    expect(userAccountBalanceChange).to.not.equals(0);
 
     const betProofAccount = await BetProof.fetch(connection, betProof);
     expect(betProofAccount).to.be.null;
   });
 
-  it("should be able to withdraw funds to treasury account", async () => {
+  it("should be able to withdraw funds from the treasury account", async () => {
     const ix = await program.createWithdrawTreasuryInstruction({
       house: houseAddress,
       amount: new anchor.BN(1e9),
