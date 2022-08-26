@@ -81,10 +81,10 @@ pub struct CreateBetProof<'info> {
     )]
     pub bet_proof: Account<'info, BetProof>,
 
-    #[account(address = house.fee_vaults[0])]
+    #[account(mut, address = house.fee_vaults[0])]
     pub fee_vault_one: SystemAccount<'info>,
 
-    #[account(address = house.fee_vaults[1])]
+    #[account(mut, address = house.fee_vaults[1])]
     pub fee_vault_two: SystemAccount<'info>,
 
     #[account(mut)]
