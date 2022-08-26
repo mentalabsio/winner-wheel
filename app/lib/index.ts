@@ -1,7 +1,17 @@
-import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import BN from "bn.js";
-import { House } from "./gen/accounts";
-import { createBetProof, initializeHouse } from "./gen/instructions";
+import { BetProof, House } from "./gen/accounts";
+import {
+  createBetProof,
+  initializeHouse,
+  setBetResult,
+} from "./gen/instructions";
+import { BetResultKind } from "./gen/types";
 import { findBetProofAddress, findHouseAddress, findVaultAddress } from "./pda";
 
 export const WinnerWheelProgram = (connection: Connection) => {
@@ -24,7 +34,7 @@ export const WinnerWheelProgram = (connection: Connection) => {
     const vaultOne = findVaultAddress({ house, name: "vault_one" });
     const vaultTwo = findVaultAddress({ house, name: "vault_two" });
 
-    const ix = initializeHouse(
+    return initializeHouse(
       { feeBasisPoints, funds: initialFunds, id },
       {
         house,
@@ -36,8 +46,6 @@ export const WinnerWheelProgram = (connection: Connection) => {
         systemProgram,
       }
     );
-
-    return ix;
   };
 
   const createBetProofInstruction = async ({
@@ -53,7 +61,7 @@ export const WinnerWheelProgram = (connection: Connection) => {
       .feeVaults;
     const betProof = findBetProofAddress({ user, house });
 
-    const ix = createBetProof(
+    return createBetProof(
       { betValue },
       {
         user,
@@ -64,12 +72,32 @@ export const WinnerWheelProgram = (connection: Connection) => {
         systemProgram,
       }
     );
+  };
 
-    return ix;
+  const createSetBetResultInstruction = async ({
+    result,
+    betProof,
+    houseAuthority,
+  }: {
+    result: BetResultKind;
+    betProof: PublicKey;
+    houseAuthority: PublicKey;
+  }): Promise<TransactionInstruction> => {
+    const { house } = await BetProof.fetch(connection, betProof);
+
+    return setBetResult(
+      { result },
+      {
+        house,
+        betProof,
+        authority: houseAuthority,
+      }
+    );
   };
 
   return {
     createHouseInstruction,
     createBetProofInstruction,
+    createSetBetResultInstruction,
   };
 };
