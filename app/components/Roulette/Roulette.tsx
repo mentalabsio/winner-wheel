@@ -1,9 +1,12 @@
-import { web3 } from '@project-serum/anchor'
+import useWinnerWheel from '@/hooks/useWinnerWheel'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { LAMPORTS_PER_SOL, Transaction } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import { Box } from 'theme-ui'
 import { Wheel } from '../Wheel'
+import { BetProof } from 'lib/gen/accounts'
+import { PublicKey } from '@solana/web3.js'
+import { findBetProofAddress } from 'lib/pda'
+import { Button } from 'theme-ui'
 
 export interface StyleType {
   backgroundColor?: string
@@ -110,49 +113,47 @@ export default (props: RouletteProps) => {
   const { selectedBet } = props
   const [mustSpin, setMustSpin] = useState(false)
   const [prizeNumber, setPrizeNumber] = useState(0)
-  const { signTransaction, publicKey } = useWallet()
+  const { publicKey } = useWallet()
   const { connection } = useConnection()
+  const { createBetProof, claimBet } = useWinnerWheel()
+  const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false)
+  const [shouldTestBetProof, setShouldTestBetProof] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (publicKey) {
+      const betProof = findBetProofAddress({
+        user: publicKey,
+        house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
+      })
+
+      const getBetProof = async () => {
+        const betProofAccount = await BetProof.fetch(connection, betProof).then(
+          (res) => (res ? res.toJSON() : null)
+        )
+        if (betProofAccount) setIsClaimAvailable(true)
+      }
+      getBetProof().catch(console.error)
+    }
+  }, [publicKey, shouldTestBetProof])
+
+  console.log(isClaimAvailable)
 
   const handleStartSpinning = async () => {
     if (!publicKey) return null
 
-    let blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
+    const betProof = await createBetProof(selectedBet)
 
-    const tx = new Transaction({
-      feePayer: publicKey,
-      recentBlockhash: blockhash,
-    })
+    if (betProof.error) {
+      alert(betProof.error)
+      return null
+    }
 
-    tx.add(
-      web3.SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: new web3.PublicKey(
-          'ATVgGHUBn1dCvuMAm25NjgHBVuR8dPtpT2brkQ1F6V8M'
-        ),
-        lamports: selectedBet * LAMPORTS_PER_SOL,
-      })
-    )
+    console.log('betProof Roulette:', betProof?.betProofAccount?.toJSON())
 
-    // ask for user to sign transaction
-    const signedTransaction = await signTransaction(tx)
-
-    if (!signedTransaction) return null
-
-    const res = await (
-      await fetch('/api/transactions/getPrize', {
-        method: 'POST',
-        body: JSON.stringify({
-          serializedTx: signedTransaction.serialize(),
-          data,
-          publicKey,
-          selectedBet,
-        }),
-      })
-    ).json()
-
-    setPrizeNumber(res.data.number)
+    setPrizeNumber(1)
     setMustSpin(true)
-    console.log('winner option:', data[res.data.number])
+    console.log('winner option:', data[1])
+    setTimeout(() => setShouldTestBetProof(true), 1000)
   }
 
   useEffect(() => {}, [mustSpin])
@@ -164,7 +165,6 @@ export default (props: RouletteProps) => {
           cursor: 'pointer',
           marginBottom: '2rem',
         }}
-        onClick={handleStartSpinning}
       >
         <Wheel
           mustStartSpinning={mustSpin}
@@ -180,6 +180,22 @@ export default (props: RouletteProps) => {
             setMustSpin(false)
           }}
         />
+        <Button onClick={handleStartSpinning}>Spin</Button>
+        {isClaimAvailable && (
+          <Button
+            onClick={async () => {
+              const result = await claimBet()
+
+              if (result.error) alert(result.error)
+
+              alert(result.sig)
+
+              setShouldTestBetProof(true)
+            }}
+          >
+            Claim
+          </Button>
+        )}
       </Box>
     </>
   )
