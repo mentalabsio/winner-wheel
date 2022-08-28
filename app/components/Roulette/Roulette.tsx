@@ -214,9 +214,10 @@ export default (props: RouletteProps) => {
 
   useEffect(() => {}, [mustSpin])
 
-  return (
-    <>
-      <Box
+	return (
+		<>
+			<Box
+				onClick={() => handleStartSpinning()}
 				sx={{
 					cursor: 'pointer',
 					marginBottom: '2rem',
