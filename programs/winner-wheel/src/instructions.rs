@@ -129,13 +129,17 @@ impl<'info> CreateBetProof<'info> {
         let amount = ctx.accounts.charge_fees(amount)?;
 
         // this is probably random enough
-        let i = Clock::get()?.unix_timestamp / 14 % 4;
+        let i = Clock::get()?.unix_timestamp / 14 % 12;
 
+        // 1/12 -> 3x
+        // 3/12 -> 2x
+        // 3/12 -> Retry
+        // 5/12 -> 0
         let result = match i {
-            1 => BetResult::LoseAll,
-            2 => BetResult::Duplicate,
-            3 => BetResult::Triplicate,
-            _ => BetResult::Retry,
+            0 => BetResult::Triplicate,
+            1..=3 => BetResult::Duplicate,
+            4..=6 => BetResult::Retry,
+            _ => BetResult::LoseAll,
         };
 
         utils::transfer(
