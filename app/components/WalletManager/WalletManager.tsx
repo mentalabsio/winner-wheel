@@ -30,7 +30,7 @@ const WalletManager = () => {
             sx={{
               backgroundColor: 'unset',
               transition: 'all .3s linear',
-              color: 'heading',
+              color: 'primary',
               lineHeight: 'body',
               fontSize: '1.4rem',
               padding: '0',
@@ -42,10 +42,11 @@ const WalletManager = () => {
               },
 
               '&:hover': {
+                backgroundColor: 'unset!important',
                 background: 'unset',
                 backgroundImage: 'unset!important',
-                color: 'primary',
                 cursor: 'pointer',
+                opacity: 0.7,
               },
             }}
           ></WalletMultiButton>
@@ -61,8 +62,8 @@ const WalletManager = () => {
               height: 'unset',
               alignSelf: 'flex-end',
               display: 'flex',
-              background: (theme) => theme.colors?.primaryGradient,
-              border: '.2rem solid transparent',
+              background: (theme) => theme.colors?.primary,
+              border: '1px solid transparent',
               transition: 'all .125s linear',
               alignItems: 'center',
               borderColor: 'primary',
@@ -70,10 +71,11 @@ const WalletManager = () => {
               fontWeight: 500,
 
               '&:not(:disabled):hover': {
-                bg: 'unset',
+                bg: 'text',
                 cursor: 'pointer',
-                borderWidth: '.2rem',
+                borderWidth: '1px',
                 opacity: 0.7,
+                color: '#fff',
               },
 
               '&:disabled': {

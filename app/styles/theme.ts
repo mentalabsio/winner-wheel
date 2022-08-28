@@ -1,14 +1,14 @@
-import { Theme } from "theme-ui"
+import { Theme } from 'theme-ui'
 
-import base from "./preset-base"
-import { reactTabsStyles } from "./react-tabs"
+import base from './preset-base'
+import { reactTabsStyles } from './react-tabs'
 
 export const getGradient = (rgb: string) => {
   /**
-   * Split RGB. Example: rgb(226, 217, 211)
+   * Split RGB. Example: rgb(17, 17, 17)
    * Then extract only numbers
    */
-  const splitted = rgb.split(",").map((raw) => raw.replace(/\D/g, ""))
+  const splitted = rgb.split(',').map((raw) => raw.replace(/\D/g, ''))
 
   return `linear-gradient(225deg, ${rgb} 0%, rgba(${splitted[0]}, ${splitted[1]}, ${splitted[2]}, 0.7) 50%, rgba(${splitted[0]}, ${splitted[1]}, ${splitted[2]}, 0.5) 100%)`
 }
@@ -22,30 +22,30 @@ export const getGradient = (rgb: string) => {
 const theme: Theme = {
   ...base,
   colors: {
-    background: "rgb(24, 19, 19)",
-    text: "rgb(226, 217, 211)",
-    primary: "rgb(255,223,0)",
-    primaryGradient: getGradient("rgb(255,223,0)"),
-    heading: "rgb(226, 217, 211)",
-    background2: "#1E1E24",
-    backgroundGradient: getGradient("rgb(24, 19, 19)"),
+    background: 'rgb(24, 19, 19)',
+    text: 'rgb(17, 17, 17)',
+    primary: 'rgb(209, 173, 107)',
+    primaryGradient: getGradient('rgb(209, 173, 107)'),
+    heading: 'rgb(17, 17, 17)',
+    background2: '#1E1E24',
+    backgroundGradient: getGradient('rgb(24, 19, 19)'),
     modes: {
       light: {
-        background: "rgb(226, 217, 211)",
-        text: "rgb(24, 19, 19)",
-        primary: "rgb(255,223,0)",
-        primaryGradient: getGradient("rgb(255,223,0)"),
-        heading: "#1E1E24",
-        background2: "#1E1E24",
-        backgroundGradient: getGradient("rgb(226, 217, 211)")
-      }
+        background: 'rgb(17, 17, 17)',
+        text: 'rgb(24, 19, 19)',
+        primary: 'rgb(209, 173, 107)',
+        primaryGradient: getGradient('rgb(209, 173, 107)'),
+        heading: '#1E1E24',
+        background2: '#1E1E24',
+        backgroundGradient: getGradient('rgb(17, 17, 17)'),
+      },
     },
-    error: "#B00020",
-    success: "#5cb85c",
+    error: '#B00020',
+    success: '#5cb85c',
   },
 
   sizes: {
-    container: "80rem",
+    container: '80rem',
   },
   config: {
     useLocalStorage: true,
@@ -58,96 +58,97 @@ const theme: Theme = {
 
   buttons: {
     primary: {
-      display: "flex",
-      color: "heading",
-      background: (theme) => theme.colors?.primaryGradient,
-      border: "1px solid transparent",
-      transition: "all .125s linear",
-      alignItems: "center",
-      borderColor: "primary",
+      display: 'flex',
+      color: 'text',
+      background: (theme) => theme.colors?.primary,
+      border: '1px solid transparent',
+      transition: 'all .125s linear',
+      alignItems: 'center',
+      borderColor: 'primary',
       opacity: 1,
       fontWeight: 500,
 
-      "&:not(:disabled):hover": {
-        bg: "background",
-        borderColor: "primary",
-        cursor: "pointer",
+      '&:not(:disabled):hover': {
+        bg: 'background',
+        borderColor: 'primary',
+        cursor: 'pointer',
         opacity: 0.7,
+        color: '#fff',
       },
 
-      "&:disabled": {
-        cursor: "not-allowed",
+      '&:disabled': {
+        cursor: 'not-allowed',
         opacity: 0.3,
       },
     },
     secondary: {
-      display: "flex",
-      color: "heading",
+      display: 'flex',
+      color: 'heading',
       background: (theme) => theme.colors?.backgroundGradient,
-      border: "1px solid transparent",
-      transition: "all .125s linear",
-      alignItems: "center",
-      borderColor: "heading",
+      border: '1px solid transparent',
+      transition: 'all .125s linear',
+      alignItems: 'center',
+      borderColor: 'heading',
       opacity: 1,
       fontWeight: 500,
 
-      "&:not(:disabled):hover": {
-        bg: "background",
-        cursor: "pointer",
+      '&:not(:disabled):hover': {
+        bg: 'background',
+        cursor: 'pointer',
         opacity: 0.7,
       },
 
-      "&:disabled": {
-        cursor: "not-allowed",
+      '&:disabled': {
+        cursor: 'not-allowed',
         opacity: 0.3,
       },
     },
     special: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "heading",
-      transform: "perspective(1px) translateZ(0)",
-      position: "relative",
-      background: "linear-gradient(45deg, rgb(145, 255, 200), grey)",
-      borderRadius: ".4rem",
-      boxShadow: "0 0 5px 2px #00000054",
-      fontSize: "1.6rem",
-      padding: "1.2rem 3.2rem",
-      textTransform: "capitalize",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'heading',
+      transform: 'perspective(1px) translateZ(0)',
+      position: 'relative',
+      background: 'linear-gradient(45deg, rgb(145, 255, 200), grey)',
+      borderRadius: '.4rem',
+      boxShadow: '0 0 5px 2px #00000054',
+      fontSize: '1.6rem',
+      padding: '1.2rem 3.2rem',
+      textTransform: 'capitalize',
       fontWeight: 500,
-      textAlign: "center",
-      transition: "all .125s linear",
+      textAlign: 'center',
+      transition: 'all .125s linear',
 
-      "&:not(:disabled):hover": {
-        background: "linear-gradient(225deg, rgb(145, 255, 200), grey)",
-        cursor: "pointer",
+      '&:not(:disabled):hover': {
+        background: 'linear-gradient(225deg, rgb(145, 255, 200), grey)',
+        cursor: 'pointer',
       },
 
-      "&:disabled": {
-        cursor: "not-allowed",
+      '&:disabled': {
+        cursor: 'not-allowed',
         opacity: 0.3,
       },
     },
     resetted: {
-      display: "flex",
-      background: "none" /*essential*/,
-      border: "none" /*essential*/,
-      padding: "0" /*essential*/,
-      font: "inherit" /*important as otherwise the text will look slightly different*/,
+      display: 'flex',
+      background: 'none' /*essential*/,
+      border: 'none' /*essential*/,
+      padding: '0' /*essential*/,
+      font: 'inherit' /*important as otherwise the text will look slightly different*/,
       color:
-        "inherit" /*if you want the span the same colour as the rest of the sentence*/,
+        'inherit' /*if you want the span the same colour as the rest of the sentence*/,
       cursor:
-        "pointer" /*make sure you add this, but if you really want it to behave like a span you would leave this out*/,
-      transition: "all .125s linear",
+        'pointer' /*make sure you add this, but if you really want it to behave like a span you would leave this out*/,
+      transition: 'all .125s linear',
 
-      "&:not(:disabled):hover": {
-        cursor: "pointer",
+      '&:not(:disabled):hover': {
+        cursor: 'pointer',
         opacity: 0.7,
       },
 
-      "&:disabled": {
-        cursor: "not-allowed",
+      '&:disabled': {
+        cursor: 'not-allowed',
         opacity: 0.3,
       },
     },
@@ -157,54 +158,54 @@ const theme: Theme = {
 
   text: {
     heading: {
-      color: "heading",
-      lineHeight: "body",
-      fontSize: "2.2rem",
+      color: 'heading',
+      lineHeight: 'body',
+      fontSize: '2.2rem',
       fontFamily:
         'AvertaStd-Bold, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
       fontWeight: 900,
     },
     headingSpecial: {
-      color: "heading",
-      lineHeight: "body",
-      fontSize: "2.2rem",
+      color: 'heading',
+      lineHeight: 'body',
+      fontSize: '2.2rem',
       fontFamily:
         'AvertaStd-Bold, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
       fontWeight: 900,
     },
     heading2: {
-      color: "heading",
-      lineHeight: "body",
-      fontSize: "1.9rem",
-      fontFamily: "heading",
+      color: 'heading',
+      lineHeight: 'body',
+      fontSize: '1.9rem',
+      fontFamily: 'heading',
       fontWeight: 600,
     },
     heading3: {
-      color: "heading",
-      lineHeight: "body",
-      fontSize: "1.7rem",
+      color: 'heading',
+      lineHeight: 'body',
+      fontSize: '1.7rem',
       fontWeight: 600,
     },
     heading4: {
-      color: "heading",
-      lineHeight: "body",
-      fontSize: "1.6rem",
+      color: 'heading',
+      lineHeight: 'body',
+      fontSize: '1.6rem',
       fontWeight: 600,
     },
     base: {
-      color: "text",
-      lineHeight: "body",
-      fontSize: "1.4rem",
+      color: 'text',
+      lineHeight: 'body',
+      fontSize: '1.4rem',
     },
     small: {
-      color: "text",
-      lineHeight: "body",
-      fontSize: "1.2rem",
+      color: 'text',
+      lineHeight: 'body',
+      fontSize: '1.2rem',
     },
     xsmall: {
-      color: "text",
-      lineHeight: "body",
-      fontSize: "1rem",
+      color: 'text',
+      lineHeight: 'body',
+      fontSize: '1rem',
     },
   },
 
@@ -213,24 +214,24 @@ const theme: Theme = {
 
     root: {
       ...base.styles?.root,
-      fontSize: "62.5%",
-      minHeight: "100vh",
+      fontSize: '62.5%',
+      minHeight: '100vh',
 
       body: {
         /** Default text styles */
-        fontSize: "1.4rem",
+        fontSize: '1.4rem',
         fontFamily:
           'AvertaStd-Regular, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
         lineHeight: 1.45,
-        minHeight: "100vh",
-        color: "text",
-        backgroundColor: "background",
-        transition: "all .125s linear",
+        minHeight: '100vh',
+        color: 'text',
+        backgroundColor: 'background',
+        transition: 'all .125s linear',
       },
 
       img: {
-        maxWidth: "100%",
-        height: "auto",
+        maxWidth: '100%',
+        height: 'auto',
       },
 
       p: {
@@ -238,22 +239,22 @@ const theme: Theme = {
       },
 
       a: {
-        transition: "all .125s linear",
-        color: "text",
+        transition: 'all .125s linear',
+        color: 'text',
 
-        "&:hover": {
-          cursor: "pointer",
-          color: "primary",
+        '&:hover': {
+          cursor: 'pointer',
+          color: 'primary',
         },
 
-        "&:-webkit-any-link": {
-          color: "heading",
-          textDecoration: "none",
-          transition: "all .125s linear",
+        '&:-webkit-any-link': {
+          color: 'heading',
+          textDecoration: 'none',
+          transition: 'all .125s linear',
 
-          "&:hover": {
-            cursor: "pointer",
-            textDecoration: "underline",
+          '&:hover': {
+            cursor: 'pointer',
+            textDecoration: 'underline',
             opacity: 0.8,
           },
         },
@@ -261,12 +262,12 @@ const theme: Theme = {
       ul: {
         paddingInlineStart: 0,
       },
-      ".slick-dots": {
-        "li button::before": {
-          color: "text",
+      '.slick-dots': {
+        'li button::before': {
+          color: 'text',
         },
-        "li.slick-active button::before": {
-          color: "text",
+        'li.slick-active button::before': {
+          color: 'text',
         },
       },
 
@@ -274,7 +275,7 @@ const theme: Theme = {
     },
 
     spinnerSmall: {
-      size: "1.2rem!important",
+      size: '1.2rem!important',
     },
   },
 }

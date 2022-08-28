@@ -30,11 +30,11 @@ export const BetOptions = ({
             marginRight: '2rem',
             marginBottom: '1rem',
             color: '#000',
-            background: (theme) => theme.colors?.primaryGradient,
+            background: (theme) => theme.colors?.primary,
             border: (theme) =>
               selectedBet === value
-                ? `1px solid ${theme.colors?.primary}`
-                : 'none',
+                ? `1px solid #fff`
+                : '1px solid transparent',
           }}
         >
           {value} SOL
