@@ -94,6 +94,7 @@ impl<'info> InitializeHouse<'info> {
 
 #[derive(Accounts)]
 pub struct CreateBetProof<'info> {
+    #[account(mut)]
     pub house: Account<'info, House>,
 
     #[account(
@@ -136,6 +137,13 @@ impl<'info> CreateBetProof<'info> {
             3 => BetResult::Triplicate,
             _ => BetResult::Retry,
         };
+
+        utils::transfer(
+            amount,
+            ctx.accounts.user.to_account_info(),
+            ctx.accounts.house.to_account_info(),
+            ctx.accounts.system_program.to_account_info(),
+        )?;
 
         *ctx.accounts.bet_proof = BetProof::new(
             ctx.accounts.user.key(),

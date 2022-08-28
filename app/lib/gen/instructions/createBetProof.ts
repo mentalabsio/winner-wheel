@@ -24,7 +24,7 @@ export function createBetProof(
   accounts: CreateBetProofAccounts
 ) {
   const keys: Array<AccountMeta> = [
-    { pubkey: accounts.house, isSigner: false, isWritable: false },
+    { pubkey: accounts.house, isSigner: false, isWritable: true },
     { pubkey: accounts.betProof, isSigner: false, isWritable: true },
     { pubkey: accounts.feeVaultOne, isSigner: false, isWritable: true },
     { pubkey: accounts.feeVaultTwo, isSigner: false, isWritable: true },
