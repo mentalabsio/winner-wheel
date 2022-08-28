@@ -125,8 +125,7 @@ pub struct CreateBetProof<'info> {
 impl<'info> CreateBetProof<'info> {
     #[inline(always)]
     pub fn handler(ctx: Context<Self>, amount: u64) -> Result<()> {
-        // Update amount to `amount - fee`
-        let amount = ctx.accounts.charge_fees(amount)?;
+        ctx.accounts.charge_fees(amount)?;
 
         // this is probably random enough
         let i = Clock::get()?.unix_timestamp / 14 % 12;
@@ -159,7 +158,7 @@ impl<'info> CreateBetProof<'info> {
         Ok(())
     }
 
-    fn charge_fees(&mut self, amount: u64) -> Result<u64> {
+    fn charge_fees(&mut self, amount: u64) -> Result<()> {
         let fee = self.house.calculate_fee(amount)?;
 
         utils::transfer(
@@ -176,7 +175,7 @@ impl<'info> CreateBetProof<'info> {
             self.system_program.to_account_info(),
         )?;
 
-        Ok(amount - (fee * 2))
+        Ok(())
     }
 }
 
