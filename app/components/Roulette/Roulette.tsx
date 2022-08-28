@@ -6,208 +6,209 @@ import { Wheel } from '../Wheel'
 import { BetProof } from 'lib/gen/accounts'
 import { PublicKey } from '@solana/web3.js'
 import { findBetProofAddress } from 'lib/pda'
-import { Button } from 'theme-ui'
+import { message } from 'antd'
 
 export interface StyleType {
-  backgroundColor?: string
-  textColor?: string
+	backgroundColor?: string
+	textColor?: string
 }
 
 export interface WheelData {
-  option: string
-  style?: StyleType
+	option: string
+	style?: StyleType
 }
 
 const data = [
-  {
-    id: 0,
-    option: '0',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 1,
-    option: '⟳',
-    style: {
-      backgroundColor: '#1A1A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 2,
-    option: '2X',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 3,
-    option: '0',
-    style: {
-      backgroundColor: '#1A1A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 4,
-    option: '⟳',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 5,
-    option: '2X',
-    style: {
-      backgroundColor: '#1A1A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 6,
-    option: '0',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 7,
-    option: '3X',
-    style: {
-      backgroundColor: '#D1AD6B',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 8,
-    option: '0',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 9,
-    option: '2X',
-    style: {
-      backgroundColor: '#1A1A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 10,
-    option: '0',
-    style: {
-      backgroundColor: '#E71A1A',
-      textColor: '#fff',
-    },
-  },
-  {
-    id: 11,
-    option: '⟳',
-    style: {
-      backgroundColor: '#1A1A1A',
-      textColor: '#fff',
-    },
-  },
+	{
+		id: 0,
+		option: '0',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 1,
+		option: '⟳',
+		style: {
+			backgroundColor: '#1A1A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 2,
+		option: '2X',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 3,
+		option: '0',
+		style: {
+			backgroundColor: '#1A1A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 4,
+		option: '⟳',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 5,
+		option: '2X',
+		style: {
+			backgroundColor: '#1A1A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 6,
+		option: '0',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 7,
+		option: '3X',
+		style: {
+			backgroundColor: '#D1AD6B',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 8,
+		option: '0',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 9,
+		option: '2X',
+		style: {
+			backgroundColor: '#1A1A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 10,
+		option: '0',
+		style: {
+			backgroundColor: '#E71A1A',
+			textColor: '#fff',
+		},
+	},
+	{
+		id: 11,
+		option: '⟳',
+		style: {
+			backgroundColor: '#1A1A1A',
+			textColor: '#fff',
+		},
+	},
 ]
 
 const parseResultKind = (kind: string): number => {
-  console.log('kind:', kind)
-  switch (kind) {
-    case 'Triplicate':
-      return 7
-    case 'Duplicate':
-      const duplicateIndexes = data.filter(({ option }) => option === '2X')
+	console.log('kind:', kind)
+	switch (kind) {
+		case 'Triplicate':
+			return 7
+		case 'Duplicate':
+			const duplicateIndexes = data.filter(({ option }) => option === '2X')
 
-      const randomDuplicateElement =
-        duplicateIndexes[Math.floor(Math.random() * duplicateIndexes.length)]
+			const randomDuplicateElement =
+				duplicateIndexes[Math.floor(Math.random() * duplicateIndexes.length)]
 
-      return randomDuplicateElement.id
-    case 'Retry':
-      const retryIndexes = data.filter(({ option }) => option === '⟳')
+			return randomDuplicateElement.id
+		case 'Retry':
+			const retryIndexes = data.filter(({ option }) => option === '⟳')
 
-      const randomRetryElement =
-        retryIndexes[Math.floor(Math.random() * retryIndexes.length)]
+			const randomRetryElement =
+				retryIndexes[Math.floor(Math.random() * retryIndexes.length)]
 
-      return randomRetryElement.id
-    case 'LoseAll':
-      const LoseAllIndexes = data.filter(({ option }) => option === '0')
+			return randomRetryElement.id
+		case 'LoseAll':
+			const LoseAllIndexes = data.filter(({ option }) => option === '0')
 
-      const randomLoseAllElement =
-        LoseAllIndexes[Math.floor(Math.random() * LoseAllIndexes.length)]
+			const randomLoseAllElement =
+				LoseAllIndexes[Math.floor(Math.random() * LoseAllIndexes.length)]
 
-      return randomLoseAllElement.id
-    default:
-      return 0
-  }
+			return randomLoseAllElement.id
+		default:
+			return 0
+	}
 }
 
 export interface RouletteProps {
-  selectedBet: number
+	selectedBet: number
 }
 
 export default (props: RouletteProps) => {
-  const { selectedBet } = props
-  const [mustSpin, setMustSpin] = useState(false)
-  const [prizeNumber, setPrizeNumber] = useState(0)
-  const { publicKey } = useWallet()
-  const { connection } = useConnection()
-  const { createBetProof, claimBet } = useWinnerWheel()
-  const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false)
-  const [shouldTestBetProof, setShouldTestBetProof] = useState<boolean>(false)
+	const { selectedBet } = props
+	const [mustSpin, setMustSpin] = useState(false)
+	const [prizeNumber, setPrizeNumber] = useState(0)
+	const { publicKey } = useWallet()
+	const { connection } = useConnection()
+	const { createBetProof, claimBet } = useWinnerWheel()
 
-  useEffect(() => {
-    if (publicKey) {
-      const betProof = findBetProofAddress({
-        user: publicKey,
-        house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
-      })
+	const handleStartSpinning = async () => {
+		if (!publicKey) return null
 
-      const getBetProof = async () => {
-        const betProofAccount = await BetProof.fetch(connection, betProof).then(
-          (res) => (res ? res.toJSON() : null)
-        )
-        if (betProofAccount) setIsClaimAvailable(true)
-      }
-      getBetProof().catch(console.error)
-    }
-  }, [publicKey, shouldTestBetProof])
+		const betProof = findBetProofAddress({
+			user: publicKey,
+			house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
+		})
 
-  console.log(isClaimAvailable)
+		const betProofAccount = await BetProof.fetch(connection, betProof)
 
-  const handleStartSpinning = async () => {
-    if (!publicKey) return null
+		// if bet proof account exists, call claimBet
+		if (betProofAccount) {
+			const result = await claimBet()
+			if (result.error) {
+				message.error(result.error)
+				return null
+			}
 
-    const betProof = await createBetProof(selectedBet)
+			message.info(`Signature: ${result.sig}`)
+			return null
+		}
 
-    if (betProof.error) {
-      alert(betProof.error)
-      return null
-    }
+		const createdBetProof = await createBetProof(selectedBet)
 
-    console.log('betProof Roulette:', betProof?.betProofAccount?.toJSON())
+		if (createdBetProof.error) {
+			message.error(createdBetProof.error)
+			return null
+		}
 
-    if (!betProof?.betProofAccount?.toJSON().result) {
-      alert(
-        'Transaction not confirmed. Check your recent transactions to see the results.'
-      )
-      return null
-    }
+		console.log(
+			'betProof Roulette:',
+			createdBetProof?.betProofAccount?.toJSON()
+		)
 
-    const parsedResult = parseResultKind(
-      betProof?.betProofAccount?.toJSON().result.kind
-    )
+		if (!createdBetProof?.betProofAccount?.toJSON().result) {
+			message.error(
+				'Transaction not confirmed. Check your recent transactions to see the results.'
+			)
+			return null
+		}
 
-    console.log('parsedResult:', parsedResult)
+		const resultKind = createdBetProof?.betProofAccount?.toJSON().result.kind
 
-    setPrizeNumber(parsedResult)
-    setMustSpin(true)
+		const parsedResult = parseResultKind(resultKind)
+
+		console.log('parsedResult:', parsedResult)
+
+		setPrizeNumber(parsedResult)
+		setMustSpin(true)
 		setTimeout(() => {
 			switch (resultKind) {
 				case 'Triplicate':
@@ -232,9 +233,9 @@ export default (props: RouletteProps) => {
 			}
 		}, 11000)
 		console.log('winner option:', data[parsedResult])
-  }
+	}
 
-  useEffect(() => {}, [mustSpin])
+	useEffect(() => {}, [mustSpin])
 
 	return (
 		<>
