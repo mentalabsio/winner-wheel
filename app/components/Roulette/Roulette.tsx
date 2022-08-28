@@ -186,7 +186,10 @@ export default (props: RouletteProps) => {
             onClick={async () => {
               const result = await claimBet()
 
-              if (result.error) alert(result.error)
+              if (result.error) {
+                alert(result.error)
+                return null
+              }
 
               alert(result.sig)
 
