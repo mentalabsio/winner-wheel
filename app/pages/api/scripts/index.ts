@@ -1,21 +1,20 @@
-import * as anchor from '@project-serum/anchor'
-import { AuthorityType } from '@solana/spl-token'
+import { AnchorProvider, BN, web3 } from '@project-serum/anchor'
 import {
   Connection,
   Keypair,
   PublicKey,
+  sendAndConfirmTransaction,
   Signer,
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js'
-import { expect } from 'chai'
 import { WinnerWheelProgram } from 'lib'
 import { House } from 'lib/gen/accounts'
 import { fromTxError } from 'lib/gen/errors'
 import { findHouseAddress } from 'lib/pda'
 
 const send = async (
-  provider: anchor.AnchorProvider,
+  provider: AnchorProvider,
   signers: Signer[],
   ...ixs: TransactionInstruction[]
 ): Promise<string> => {
@@ -43,13 +42,22 @@ const send = async (
 export default async function handler(req: any, res: any) {
   if (process.env.NODE_ENV === 'production') return res.status(404).end()
 
-  const provider = anchor.AnchorProvider.env()
-  anchor.setProvider(provider)
+  const endpoint =
+    process.env.NEXT_PUBLIC_CONNECTION_NETWORK == "devnet"
+      ? process.env.NEXT_PUBLIC_SOLANA_RPC_HOST_DEVNET
+      : process.env.NEXT_PUBLIC_SOLANA_RPC_HOST_MAINNET_BETA
 
-  const connection = provider.connection
+  const connection = new Connection(endpoint)
+
   const program = WinnerWheelProgram(connection)
 
-  const authority = provider.wallet
+  const keypair_string = process.env.HOUSE_PRIVATE_KEY
+
+  const keypair_array = keypair_string?.replace('[', '')?.replace(']', '')?.split(',')?.map(Number);
+
+  const keypair = new Uint8Array(keypair_array)
+
+  const authority = web3.Keypair.fromSecretKey(keypair)
 
   switch (req.query.task) {
     case 'initialize-house':
@@ -68,11 +76,24 @@ export default async function handler(req: any, res: any) {
           // 1.25% * 100 = 125 bps
           feeBasisPoints: 125,
           // How many lamports to send from `authority`to `treasuryAccount`.
-          initialFunds: new anchor.BN(100e9),
+          initialFunds: new BN(5e9),
           authority: authority.publicKey,
         })
 
-        await send(provider, [], ix)
+        const blockhash = (await connection.getLatestBlockhash('confirmed')).blockhash
+        const transaction = new Transaction(
+          {
+            blockhash,
+            lastValidBlockHeight: 1
+          }
+
+        )
+
+        transaction.add(ix)
+
+        await sendAndConfirmTransaction(connection, transaction, [authority], {
+          commitment: 'confirmed'
+        })
 
         const houseAccount = await House.fetch(connection, houseAddress)
 
