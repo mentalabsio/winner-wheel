@@ -20,6 +20,7 @@ export interface WheelData {
 
 const data = [
   {
+    id: 0,
     option: '0',
     style: {
       backgroundColor: '#E71A1A',
@@ -27,6 +28,7 @@ const data = [
     },
   },
   {
+    id: 1,
     option: '⟳',
     style: {
       backgroundColor: '#1A1A1A',
@@ -34,6 +36,7 @@ const data = [
     },
   },
   {
+    id: 2,
     option: '2X',
     style: {
       backgroundColor: '#E71A1A',
@@ -41,6 +44,7 @@ const data = [
     },
   },
   {
+    id: 3,
     option: '0',
     style: {
       backgroundColor: '#1A1A1A',
@@ -48,6 +52,7 @@ const data = [
     },
   },
   {
+    id: 4,
     option: '⟳',
     style: {
       backgroundColor: '#E71A1A',
@@ -55,6 +60,7 @@ const data = [
     },
   },
   {
+    id: 5,
     option: '2X',
     style: {
       backgroundColor: '#1A1A1A',
@@ -62,6 +68,7 @@ const data = [
     },
   },
   {
+    id: 6,
     option: '0',
     style: {
       backgroundColor: '#E71A1A',
@@ -69,6 +76,7 @@ const data = [
     },
   },
   {
+    id: 7,
     option: '3X',
     style: {
       backgroundColor: '#D1AD6B',
@@ -76,6 +84,7 @@ const data = [
     },
   },
   {
+    id: 8,
     option: '0',
     style: {
       backgroundColor: '#E71A1A',
@@ -83,6 +92,7 @@ const data = [
     },
   },
   {
+    id: 9,
     option: '2X',
     style: {
       backgroundColor: '#1A1A1A',
@@ -90,6 +100,7 @@ const data = [
     },
   },
   {
+    id: 10,
     option: '0',
     style: {
       backgroundColor: '#E71A1A',
@@ -97,6 +108,7 @@ const data = [
     },
   },
   {
+    id: 11,
     option: '⟳',
     style: {
       backgroundColor: '#1A1A1A',
@@ -104,6 +116,37 @@ const data = [
     },
   },
 ]
+
+const parseResultKind = (kind: string): number => {
+  console.log('kind:', kind)
+  switch (kind) {
+    case 'Triplicate':
+      return 7
+    case 'Duplicate':
+      const duplicateIndexes = data.filter(({ option }) => option === '2X')
+
+      const randomDuplicateElement =
+        duplicateIndexes[Math.floor(Math.random() * duplicateIndexes.length)]
+
+      return randomDuplicateElement.id
+    case 'Retry':
+      const retryIndexes = data.filter(({ option }) => option === '⟳')
+
+      const randomRetryElement =
+        retryIndexes[Math.floor(Math.random() * retryIndexes.length)]
+
+      return randomRetryElement.id
+    case 'LoseAll':
+      const LoseAllIndexes = data.filter(({ option }) => option === '0')
+
+      const randomLoseAllElement =
+        LoseAllIndexes[Math.floor(Math.random() * LoseAllIndexes.length)]
+
+      return randomLoseAllElement.id
+    default:
+      return 0
+  }
+}
 
 export interface RouletteProps {
   selectedBet: number
@@ -150,9 +193,22 @@ export default (props: RouletteProps) => {
 
     console.log('betProof Roulette:', betProof?.betProofAccount?.toJSON())
 
-    setPrizeNumber(1)
+    if (!betProof?.betProofAccount?.toJSON().result) {
+      alert(
+        'Transaction not confirmed. Check your recent transactions to see the results.'
+      )
+      return null
+    }
+
+    const parsedResult = parseResultKind(
+      betProof?.betProofAccount?.toJSON().result.kind
+    )
+
+    console.log('parsedResult:', parsedResult)
+
+    setPrizeNumber(parsedResult)
     setMustSpin(true)
-    console.log('winner option:', data[1])
+    console.log('winner option:', data[parsedResult])
     setTimeout(() => setShouldTestBetProof(true), 1000)
   }
 
