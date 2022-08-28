@@ -217,45 +217,26 @@ export default (props: RouletteProps) => {
   return (
     <>
       <Box
-        sx={{
-          cursor: 'pointer',
-          marginBottom: '2rem',
-        }}
-      >
-        <Wheel
-          mustStartSpinning={mustSpin}
-          prizeNumber={prizeNumber}
-          data={data}
-          radiusLineWidth={0}
-          innerRadius={10}
-          innerBorderWidth={2}
-          innerBorderColor={'#E1CA39'}
-          outerBorderWidth={2}
-          textDistance={80}
-          onStopSpinning={() => {
-            setMustSpin(false)
-          }}
-        />
-        <Button onClick={handleStartSpinning}>Spin</Button>
-        {isClaimAvailable && (
-          <Button
-            onClick={async () => {
-              const result = await claimBet()
-
-              if (result.error) {
-                alert(result.error)
-                return null
-              }
-
-              alert(result.sig)
-
-              setShouldTestBetProof(true)
-            }}
-          >
-            Claim
-          </Button>
-        )}
-      </Box>
-    </>
-  )
+				sx={{
+					cursor: 'pointer',
+					marginBottom: '2rem',
+				}}
+			>
+				<Wheel
+					mustStartSpinning={mustSpin}
+					prizeNumber={prizeNumber}
+					data={data}
+					radiusLineWidth={0}
+					innerRadius={10}
+					innerBorderWidth={2}
+					innerBorderColor={'#E1CA39'}
+					outerBorderWidth={2}
+					textDistance={80}
+					onStopSpinning={() => {
+						setMustSpin(false)
+					}}
+				/>
+			</Box>
+		</>
+	)
 }
