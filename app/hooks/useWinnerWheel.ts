@@ -1,4 +1,8 @@
-import { PublicKey, Transaction } from '@solana/web3.js'
+import {
+  PublicKey,
+  sendAndConfirmRawTransaction,
+  Transaction,
+} from '@solana/web3.js'
 
 import * as anchor from '@project-serum/anchor'
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react'
@@ -10,15 +14,15 @@ import { WinnerWheelProgram } from 'lib'
 const parseBetValue = (betValue: number) => {
   switch (betValue) {
     case 0.05:
-      return 0.05e9
+      return new anchor.BN(0.05e9)
     case 0.1:
-      return 0.1e9
+      return new anchor.BN(0.1e9)
     case 0.25:
-      return 0.25e9
+      return new anchor.BN(0.25e9)
     case 0.5:
-      return 0.5e9
+      return new anchor.BN(0.5e9)
     case 1:
-      return 1e9
+      return new anchor.BN(1e9)
     default:
       break
   }
@@ -59,7 +63,8 @@ const useWinnerWheel = () => {
 
       const tx = new Transaction({
         feePayer: anchorWallet.publicKey,
-        recentBlockhash: blockhash,
+        blockhash,
+        lastValidBlockHeight: 1,
       })
 
       tx.add(ix)
@@ -69,6 +74,10 @@ const useWinnerWheel = () => {
       const sig = await connection.sendRawTransaction(
         (await signedTx).serialize()
       )
+
+      await connection.confirmTransaction(sig, 'confirmed')
+
+      console.log('betProof sig', sig)
 
       const betProofAccount = await BetProof.fetch(connection, betProof)
 
@@ -95,7 +104,8 @@ const useWinnerWheel = () => {
 
       const tx = new Transaction({
         feePayer: anchorWallet.publicKey,
-        recentBlockhash: blockhash,
+        blockhash,
+        lastValidBlockHeight: 1,
       })
 
       const betProof = findBetProofAddress({
@@ -103,7 +113,9 @@ const useWinnerWheel = () => {
         house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
       })
 
-      if (!betProof) return { error: 'Bet already claimed.' }
+      const betProofAccount = await BetProof.fetch(connection, betProof)
+
+      if (betProofAccount === null) return { error: 'Bet already claimed.' }
 
       const ix = await program.createClaimBetInstruction({
         user: anchorWallet.publicKey,
@@ -115,10 +127,6 @@ const useWinnerWheel = () => {
       const signedTx = await anchorWallet.signTransaction(tx)
 
       const sig = await connection.sendRawTransaction(signedTx.serialize())
-
-      const betProofAccount = await BetProof.fetch(connection, betProof)
-
-      console.log('bet proof:', betProofAccount)
       return { error: '', sig }
     } catch (err) {
       const parsed = fromTxError(err)
