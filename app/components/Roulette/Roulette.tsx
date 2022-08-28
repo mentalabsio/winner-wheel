@@ -208,8 +208,30 @@ export default (props: RouletteProps) => {
 
     setPrizeNumber(parsedResult)
     setMustSpin(true)
-    console.log('winner option:', data[parsedResult])
-    setTimeout(() => setShouldTestBetProof(true), 1000)
+		setTimeout(() => {
+			switch (resultKind) {
+				case 'Triplicate':
+					message.info(
+						'You triplicated your bet. Congrats!!! Click on the wheel to claim.'
+					)
+					break
+				case 'Duplicate':
+					message.info(
+						'You duplicated Your bet. Congrats!!! Click on the wheel to claim.'
+					)
+					break
+				case 'Retry':
+					message.info(
+						'You received your money back. Click on the wheel to claim.'
+					)
+					break
+				case 'LoseAll':
+					message.info(
+						'You lost your bet ;(. Click on the wheel to close the account.'
+					)
+			}
+		}, 11000)
+		console.log('winner option:', data[parsedResult])
   }
 
   useEffect(() => {}, [mustSpin])
