@@ -1,6 +1,5 @@
 import {
   PublicKey,
-  sendAndConfirmRawTransaction,
   Transaction,
 } from '@solana/web3.js'
 
@@ -47,8 +46,6 @@ const useWinnerWheel = () => {
     })
     const betProofAccount = await BetProof.fetch(connection, betProof)
 
-    console.log('betProof:', betProofAccount?.toJSON())
-
     if (betProofAccount) return { error: 'User has an existing bet to claim.' }
 
     try {
@@ -77,11 +74,7 @@ const useWinnerWheel = () => {
 
       await connection.confirmTransaction(sig, 'confirmed')
 
-      console.log('betProof sig', sig)
-
       const betProofAccount = await BetProof.fetch(connection, betProof)
-
-      console.log('betProofAccount:', betProofAccount?.toJSON())
 
       return { error: '', sig, betProofAccount: betProofAccount }
     } catch (err) {
@@ -98,7 +91,6 @@ const useWinnerWheel = () => {
 
   const claimBet = async (): Promise<{ error: string; sig?: string }> => {
     try {
-      console.log('claim bet')
       const blockhash = (await connection.getLatestBlockhash('confirmed'))
         .blockhash
 
@@ -127,6 +119,8 @@ const useWinnerWheel = () => {
       const signedTx = await anchorWallet.signTransaction(tx)
 
       const sig = await connection.sendRawTransaction(signedTx.serialize())
+
+      console.log(sig)
       return { error: '', sig }
     } catch (err) {
       const parsed = fromTxError(err)
