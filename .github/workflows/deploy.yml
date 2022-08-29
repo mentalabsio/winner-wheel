@@ -19,3 +19,4 @@ jobs:
           vercel-project-id: ${{ secrets.PROJECT_ID}} #Required 
           working-directory: app/
           scope: team_UggzUw6S4ias8MzEPFQzIdYh
+          vercel-args: --confirm
