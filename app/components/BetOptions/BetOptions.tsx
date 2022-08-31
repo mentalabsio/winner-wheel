@@ -27,12 +27,12 @@ export const BetOptions = ({
         <Button
           onClick={() => setSelectedBet(value)}
           sx={{
-            marginRight: '2rem',
-            marginBottom: '1rem',
-            color: '#000',
-            background: (theme) => theme.colors?.primary,
-            border: (theme) =>
-              selectedBet === value
+						color: (theme) =>
+							selectedBet === value ? '#fff' : 'theme.colors.text',
+						background: (theme) =>
+							selectedBet === value ? theme.colors.text : theme.colors?.primary,
+						border: (theme) =>
+							selectedBet === value
                 ? `1px solid #fff`
                 : '1px solid transparent',
 						margin: '5px',
