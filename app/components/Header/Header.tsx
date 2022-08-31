@@ -39,7 +39,6 @@ const Header = () => {
 						gap: '1.6rem',
 						display: 'none',
 						alignItems: 'center',
-						alignSelf: 'stretch',
 
 						/** Mobile styles when the menu is active */
 						...(isMobileMenuActive && {
@@ -72,6 +71,8 @@ const Header = () => {
 							flexDirection: 'row',
 							padding: 0,
 							position: 'relative',
+							alignItems: 'flex-end',
+							justifyContent: 'flex-end',
 						},
 					}}
 				>
