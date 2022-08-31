@@ -83,19 +83,18 @@ const theme: Theme = {
     },
     secondary: {
       display: 'flex',
-      color: 'heading',
-      background: (theme) => theme.colors?.backgroundGradient,
       border: '1px solid transparent',
       transition: 'all .125s linear',
       alignItems: 'center',
-      borderColor: 'heading',
-      opacity: 1,
       fontWeight: 500,
+      backgroundColor: '#E71A1A',
+      borderColor: (theme) => theme?.colors?.primary,
+      color: '#fff',
+      opacity: 0.7,
 
       '&:not(:disabled):hover': {
-        bg: 'background',
-        cursor: 'pointer',
-        opacity: 0.7,
+        opacity: 1,
+        cursor: 'pointer'
       },
 
       '&:disabled': {
