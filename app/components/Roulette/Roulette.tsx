@@ -294,7 +294,22 @@ export default (props: RouletteProps) => {
 						setMustSpin(false)
 					}}
 				/>
-			</Box>
+					<Text
+						sx={{
+							fontFamily: 'Windsor Light BT',
+							fontSize: '72px',
+							backgroundImage: 'radial-gradient(#ccab67, #85591b)',
+							// background: '-webkit-linear-gradient(#ccab67, #85591b)',
+							'-webkit-background-clip': 'text',
+							'-webkit-text-fill-color': 'transparent',
+							fontWeight: '200',
+							letterSpacing: '0.1px',
+						}}
+					>
+						WHEEL
+					</Text>
+				</Flex>
+			</Flex>
 		</>
 	)
 }
