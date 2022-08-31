@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Header from '@/components/Header/Header'
 import Roulette from '@/components/Roulette/Roulette'
 import { BetOptions } from '@/components/BetOptions/BetOptions'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Flex } from 'theme-ui'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import useWinnerWheel from '@/hooks/useWinnerWheel'
@@ -52,28 +52,29 @@ export default function Home() {
 	const [selectedBet, setSelectedBet] = useState<number>(0.05)
 	const [prizeNumber, setPrizeNumber] = useState(0)
 	const [mustSpin, setMustSpin] = useState(false)
+	const [betProofAccountState, setBetProofAccountState] =
+		useState<BetProof | null>(null)
+	const [refetchTrigger, setRefetchTrigger] = useState<boolean>(false)
+	const [isButtonHidden, setIsButtonHidden] = useState<boolean>(false)
+
+	console.log(refetchTrigger)
+
+	useEffect(() => {
+		const getBetProofAccount = async () => {
+			if (!publicKey) return null
+			const betProof = findBetProofAddress({
+				user: publicKey,
+				house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
+			})
+
+			const betProofAccount = await BetProof.fetch(connection, betProof)
+			setBetProofAccountState(betProofAccount)
+		}
+		getBetProofAccount()
+	}, [publicKey, refetchTrigger])
 
 	const handleStartSpinning = async () => {
 		if (!publicKey) return null
-
-		const betProof = findBetProofAddress({
-			user: publicKey,
-			house: new PublicKey(process.env.NEXT_PUBLIC_HOUSE_PUBLIC_KEY),
-		})
-
-		const betProofAccount = await BetProof.fetch(connection, betProof)
-
-		// if bet proof account exists, call claimBet
-		if (betProofAccount) {
-			const result = await claimBet()
-			if (result.error) {
-				message.error(result.error)
-				return null
-			}
-
-			message.info(`Signature: ${result.sig}`)
-			return null
-		}
 
 		const createdBetProof = await createBetProof(selectedBet)
 
@@ -102,6 +103,7 @@ export default function Home() {
 
 		setPrizeNumber(parsedResult)
 		setMustSpin(true)
+		setIsButtonHidden(true)
 		setTimeout(() => {
 			switch (resultKind) {
 				case 'Triplicate':
@@ -116,8 +118,26 @@ export default function Home() {
 				case 'LoseAll':
 					message.info('You lost your bet ;(')
 			}
+			setRefetchTrigger(!refetchTrigger)
+			setIsButtonHidden(false)
 		}, 11000)
 		console.log('winner option:', data[parsedResult])
+	}
+
+	const handleClaim = async () => {
+		const result = await claimBet()
+		if (result.error) {
+			message.error(result.error)
+			setRefetchTrigger(!refetchTrigger)
+			return null
+		}
+
+		message.info(result.sig)
+		setIsButtonHidden(true)
+		setTimeout(() => {
+			setRefetchTrigger(!refetchTrigger)
+			setIsButtonHidden(false)
+		}, 5000)
 	}
 
 	return (
@@ -170,9 +190,22 @@ export default function Home() {
 						selectedBet={selectedBet}
 						setSelectedBet={setSelectedBet}
 					/>
-					<Button variant='secondary' onClick={() => handleStartSpinning()}>
-						SPIN
-					</Button>
+					{
+						<Button
+							variant='secondary'
+							onClick={
+								betProofAccountState
+									? () => handleClaim()
+									: () => handleStartSpinning()
+							}
+							disabled={isButtonHidden}
+							sx={{
+								':disabled': {},
+							}}
+						>
+							{betProofAccountState ? 'CLAIM' : 'SPIN'}
+						</Button>
+					}
 				</Flex>
 			</main>
 		</>
