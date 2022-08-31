@@ -246,6 +246,40 @@ export default (props: RouletteProps) => {
 					marginBottom: '2rem',
 				}}
 			>
+				<Box
+					sx={{
+						'@media screen and (min-width: 768px)': {
+							marginLeft: '38px',
+						},
+					}}
+				>
+					<Image width={346.5} height={238.25} src={'/images/crown.png'} />
+				</Box>
+				<Flex
+					sx={{
+						flexDirection: 'column',
+						alignItems: 'center',
+						justifyContent: 'center',
+
+						'@media screen and (min-width: 768px)': {
+							flexDirection: 'row',
+						},
+					}}
+				>
+					<Text
+						sx={{
+							fontFamily: 'Windsor Light BT',
+							fontSize: '72px',
+							backgroundImage: 'radial-gradient(#ccab67, #85591b)',
+							// background: '-webkit-linear-gradient(#ccab67, #85591b)',
+							'-webkit-background-clip': 'text',
+							'-webkit-text-fill-color': 'transparent',
+							fontWeight: '200',
+							letterSpacing: '0.1px',
+						}}
+					>
+						WINNER
+					</Text>
 				<Wheel
 					mustStartSpinning={mustSpin}
 					prizeNumber={prizeNumber}
