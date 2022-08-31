@@ -20,7 +20,6 @@ const Header = () => {
 				background: 'transparent',
 				alignItems: 'flex-end',
 				justifyContent: 'flex-end',
-				maxWidth: '1300px',
 			}}
 		>
 			<Flex
