@@ -35,8 +35,24 @@ export default function Home() {
         }}
       >
         <Roulette selectedBet={selectedBet} />
-        <BetOptions selectedBet={selectedBet} setSelectedBet={setSelectedBet} />
-      </main>
-    </>
-  )
+				<Flex
+					sx={{
+						flexDirection: 'column',
+						alignItems: 'center',
+						justifyContent: 'center',
+
+						'@media screen and (min-width: 768px)': {
+							marginLeft: '38px',
+						},
+					}}
+				>
+					<BetOptions
+						selectedBet={selectedBet}
+						setSelectedBet={setSelectedBet}
+					/>
+					<Button variant='secondary'>SPIN</Button>
+				</Flex>
+			</main>
+		</>
+	)
 }
