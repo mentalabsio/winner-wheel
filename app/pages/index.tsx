@@ -5,36 +5,39 @@ import Header from '@/components/Header/Header'
 import Roulette from '@/components/Roulette/Roulette'
 import { BetOptions } from '@/components/BetOptions/BetOptions'
 import { useState } from 'react'
+import { Button, Flex } from 'theme-ui'
 
 export default function Home() {
-  const [selectedBet, setSelectedBet] = useState<number>(0.05)
-  return (
-    <>
-      <Head>
-        <title>Winner Wheel</title>
-        <meta
-          name='description'
-          content='Spin and try your best of luck on the official Winner Wheel game.'
-        />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
+	const [selectedBet, setSelectedBet] = useState<number>(0.05)
+	return (
+		<>
+			<Head>
+				<title>Winner Wheel</title>
+				<meta
+					name='description'
+					content='Spin and try your best of luck on the official Winner Wheel game.'
+				/>
+				<link rel='icon' href='/favicon.ico' />
+			</Head>
 
-      <Header />
-      <main
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          background: 'url(images/background3.jpeg)',
-          paddingTop: '20rem',
-          height: '100vh',
-          backgroundPosition: 'unset',
-          backgroundSize: 'cover',
-          backgroundPositionY: '12%',
-        }}
-      >
-        <Roulette selectedBet={selectedBet} />
+			<Header />
+			<main
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center',
+					background: 'url(images/background4.jpeg)',
+					backgroundPosition: 'unset',
+					backgroundSize: 'cover',
+					padding: '15px',
+
+					'@media screen and (min-width: 768px)': {
+						height: '100vh',
+					},
+				}}
+			>
+				<Roulette selectedBet={selectedBet} />
 				<Flex
 					sx={{
 						flexDirection: 'column',
