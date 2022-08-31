@@ -27,7 +27,10 @@ const Header = () => {
 					alignItems: 'center',
 					justifyContent: 'flex-end',
 					padding: '1.6rem 1.6rem 0',
-					height: '8rem',
+
+					'@media screen and (min-width: 768px)': {
+						padding: '3.6rem 3.6rem 0',
+					},
 				}}
 			>
 				<Flex
