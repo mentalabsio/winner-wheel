@@ -14,38 +14,38 @@ export const BetOptions = ({
   setSelectedBet,
 }: BetOptionsProps) => {
   return (
-    <Flex
-      sx={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        maxWidth: '36rem',
-      }}
-    >
-      {betOptions.map((value) => (
-        <Button
-          onClick={() => setSelectedBet(value)}
-          sx={{
+		<Flex
+			sx={{
+				flexDirection: 'row',
+				alignItems: 'center',
+				justifyContent: 'center',
+				flexWrap: 'wrap',
+				maxWidth: '36rem',
+			}}
+		>
+			{betOptions.map((value) => (
+				<Button
+					onClick={() => setSelectedBet(value)}
+					sx={{
 						color: (theme) =>
 							selectedBet === value ? '#fff' : 'theme.colors.text',
 						background: (theme) =>
 							selectedBet === value ? theme.colors.text : theme.colors?.primary,
 						border: (theme) =>
 							selectedBet === value
-                ? `1px solid #fff`
-                : '1px solid transparent',
+								? `1px solid ${theme.colors.primary}`
+								: '1px solid transparent',
 						margin: '5px',
 
 						'@media screen and (min-width: 768px)': {
 							marginRight: '2rem',
 							marginBottom: '1rem',
 						},
-          }}
-        >
-          {value} SOL
-        </Button>
-      ))}
-    </Flex>
-  )
+					}}
+				>
+					{value} SOL
+				</Button>
+			))}
+		</Flex>
+	)
 }
