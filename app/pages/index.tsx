@@ -5,7 +5,7 @@ import Header from '@/components/Header/Header'
 import Roulette from '@/components/Roulette/Roulette'
 import { BetOptions } from '@/components/BetOptions/BetOptions'
 import { useEffect, useState } from 'react'
-import { Button, Flex } from 'theme-ui'
+import { Box, Button, Flex } from 'theme-ui'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import useWinnerWheel from '@/hooks/useWinnerWheel'
 import { findBetProofAddress } from 'lib/pda'
@@ -13,6 +13,7 @@ import { PublicKey } from '@solana/web3.js'
 import { BetProof } from 'lib/gen/accounts'
 import { message } from 'antd'
 import { data } from 'static/rouletteDataConfig'
+import Image from 'next/image'
 
 const parseResultKind = (kind: string): number => {
 	console.log('kind:', kind)
@@ -158,7 +159,6 @@ export default function Home() {
 					flexDirection: 'column',
 					justifyContent: 'center',
 					alignItems: 'center',
-					background: 'url(images/background4.jpeg)',
 					backgroundPosition: 'unset',
 					backgroundSize: 'cover',
 					padding: '15px',
@@ -168,45 +168,68 @@ export default function Home() {
 					},
 				}}
 			>
-				<Roulette
-					selectedBet={selectedBet}
-					prizeNumber={prizeNumber}
-					mustSpin={mustSpin}
-					setMustSpin={setMustSpin}
-					data={data}
-				/>
-				<Flex
+				<Image
+					layout='fill'
+					src={'/images/background4.jpeg'}
 					sx={{
-						flexDirection: 'column',
-						alignItems: 'center',
-						justifyContent: 'center',
+						position: 'absolute',
+						width: '100%',
+						top: '0',
+						right: '0',
+						zIndex: '1',
+						backgroundSize: 'cover',
+						display: 'none!important',
 
 						'@media screen and (min-width: 768px)': {
-							marginLeft: '38px',
+							display: 'block!important',
 						},
 					}}
+				/>
+				<Box
+					sx={{
+						zIndex: '2',
+					}}
 				>
-					<BetOptions
+					<Roulette
 						selectedBet={selectedBet}
-						setSelectedBet={setSelectedBet}
+						prizeNumber={prizeNumber}
+						mustSpin={mustSpin}
+						setMustSpin={setMustSpin}
+						data={data}
 					/>
-					{
-						<Button
-							variant='secondary'
-							onClick={
-								betProofAccountState
-									? () => handleClaim()
-									: () => handleStartSpinning()
-							}
-							disabled={isButtonHidden}
-							sx={{
-								':disabled': {},
-							}}
-						>
-							{betProofAccountState ? 'CLAIM' : 'SPIN'}
-						</Button>
-					}
-				</Flex>
+					<Flex
+						sx={{
+							flexDirection: 'column',
+							alignItems: 'center',
+							justifyContent: 'center',
+
+							'@media screen and (min-width: 768px)': {
+								marginLeft: '38px',
+							},
+						}}
+					>
+						<BetOptions
+							selectedBet={selectedBet}
+							setSelectedBet={setSelectedBet}
+						/>
+						{
+							<Button
+								variant='secondary'
+								onClick={
+									betProofAccountState
+										? () => handleClaim()
+										: () => handleStartSpinning()
+								}
+								disabled={isButtonHidden}
+								sx={{
+									':disabled': {},
+								}}
+							>
+								{betProofAccountState ? 'CLAIM' : 'SPIN'}
+							</Button>
+						}
+					</Flex>
+				</Box>
 			</main>
 		</>
 	)
