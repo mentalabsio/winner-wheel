@@ -1,12 +1,13 @@
 import useWinnerWheel from '@/hooks/useWinnerWheel'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useState } from 'react'
-import { Box } from 'theme-ui'
+import { Box, Flex, Text } from 'theme-ui'
 import { Wheel } from '../Wheel'
 import { BetProof } from 'lib/gen/accounts'
 import { PublicKey } from '@solana/web3.js'
 import { findBetProofAddress } from 'lib/pda'
 import { message } from 'antd'
+import Image from 'next/image'
 
 export interface StyleType {
 	backgroundColor?: string
@@ -239,9 +240,12 @@ export default (props: RouletteProps) => {
 
 	return (
 		<>
-			<Box
+			<Flex
 				onClick={() => handleStartSpinning()}
 				sx={{
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'center',
 					cursor: 'pointer',
 					marginBottom: '2rem',
 				}}
@@ -280,20 +284,20 @@ export default (props: RouletteProps) => {
 					>
 						WINNER
 					</Text>
-				<Wheel
-					mustStartSpinning={mustSpin}
-					prizeNumber={prizeNumber}
-					data={data}
-					radiusLineWidth={0}
-					innerRadius={10}
-					innerBorderWidth={2}
-					innerBorderColor={'#E1CA39'}
-					outerBorderWidth={2}
-					textDistance={80}
-					onStopSpinning={() => {
-						setMustSpin(false)
-					}}
-				/>
+					<Wheel
+						mustStartSpinning={mustSpin}
+						prizeNumber={prizeNumber}
+						data={data}
+						radiusLineWidth={0}
+						innerRadius={10}
+						innerBorderWidth={2}
+						innerBorderColor={'#E1CA39'}
+						outerBorderWidth={2}
+						textDistance={80}
+						onStopSpinning={() => {
+							setMustSpin(false)
+						}}
+					/>
 					<Text
 						sx={{
 							fontFamily: 'Windsor Light BT',
