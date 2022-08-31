@@ -35,6 +35,12 @@ export const BetOptions = ({
               selectedBet === value
                 ? `1px solid #fff`
                 : '1px solid transparent',
+						margin: '5px',
+
+						'@media screen and (min-width: 768px)': {
+							marginRight: '2rem',
+							marginBottom: '1rem',
+						},
           }}
         >
           {value} SOL
