@@ -46,6 +46,13 @@ const parseResultKind = (kind: string): number => {
 	}
 }
 
+const buttonMessageType = {
+	Triplicate: 'Claim',
+	Duplicate: 'Claim',
+	Retry: 'Claim',
+	LoseAll: 'Start over',
+}
+
 export default function Home() {
 	const { publicKey } = useWallet()
 	const { connection } = useConnection()
@@ -208,7 +215,9 @@ export default function Home() {
 									':disabled': {},
 								}}
 							>
-								{betProofAccountState ? 'CLAIM' : 'SPIN'}
+								{betProofAccountState
+									? buttonMessageType[betProofAccountState.toJSON().result.kind]
+									: 'SPIN'}
 							</Button>
 						}
 					</Flex>
