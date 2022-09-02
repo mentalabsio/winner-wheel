@@ -162,29 +162,12 @@ export default function Home() {
 					backgroundPosition: 'unset',
 					backgroundSize: 'cover',
 					padding: '15px',
-
-					'@media screen and (min-width: 768px)': {
-						height: '100vh',
-					},
+					background: 'url(images/background4.jpeg)',
+					backgroundRepeat: 'no-repeat',
+					paddingBottom: '100px',
+					backgroundRepeatY: 'repeat',
 				}}
 			>
-				<Image
-					layout='fill'
-					src={'/images/background4.jpeg'}
-					sx={{
-						position: 'absolute',
-						width: '100%',
-						top: '0',
-						right: '0',
-						zIndex: '1',
-						backgroundSize: 'cover',
-						display: 'none!important',
-
-						'@media screen and (min-width: 768px)': {
-							display: 'block!important',
-						},
-					}}
-				/>
 				<Box
 					sx={{
 						zIndex: '2',
