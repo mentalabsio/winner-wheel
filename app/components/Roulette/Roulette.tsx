@@ -37,7 +37,7 @@ export default (props: RouletteProps) => {
 					flexDirection: 'column',
 					alignItems: 'center',
 					justifyContent: 'center',
-					marginBottom: '2rem',
+					marginBottom: '1rem',
 				}}
 			>
 				<Box
@@ -47,13 +47,14 @@ export default (props: RouletteProps) => {
 						},
 					}}
 				>
-					<Image width={346.5} height={238.25} src={'/images/crown.png'} />
+					<Image width={346.5} height={187} src={'/images/crown.png'} />
 				</Box>
 				<Flex
 					sx={{
 						flexDirection: 'column',
 						alignItems: 'center',
 						justifyContent: 'center',
+						margin: '1rem 0',
 
 						'@media screen and (min-width: 768px)': {
 							flexDirection: 'row',

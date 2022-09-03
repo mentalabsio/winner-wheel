@@ -13,7 +13,6 @@ import { PublicKey } from '@solana/web3.js'
 import { BetProof } from 'lib/gen/accounts'
 import { message } from 'antd'
 import { data } from 'static/rouletteDataConfig'
-import Image from 'next/image'
 
 const parseResultKind = (kind: string): number => {
 	console.log('kind:', kind)
@@ -169,10 +168,11 @@ export default function Home() {
 					backgroundPosition: 'unset',
 					backgroundSize: 'cover',
 					padding: '15px',
-					background: 'url(images/background4.jpeg)',
+					backgroundImage: 'url(images/background4.jpeg)',
 					backgroundRepeat: 'no-repeat',
 					paddingBottom: '100px',
 					backgroundRepeatY: 'repeat',
+					minHeight: '100vh',
 				}}
 			>
 				<Box
