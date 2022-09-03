@@ -97,20 +97,6 @@ const Header = () => {
 							<CloseIcon />
 						</Button>
 					</Flex>
-					{/* Change theme-ui color mode */}
-					<Flex
-						sx={{
-							alignItems: 'center',
-							justifyContent: 'center',
-							alignSelf: 'stretch',
-
-							'&:hover': {
-								borderBottomWidth: '1px',
-								borderBottomStyle: 'solid',
-								borderBottomColor: 'text',
-							},
-						}}
-					></Flex>
 					{/* Finish menu items */}
 					<WalletManager />
 				</Flex>
