@@ -46,9 +46,9 @@ const parseResultKind = (kind: string): number => {
 }
 
 const buttonMessageType = {
-	Triplicate: 'Claim',
-	Duplicate: 'Claim',
-	Retry: 'Claim',
+	Triplicate: 'CLAIM',
+	Duplicate: 'CLAIM',
+	Retry: 'CLAIM',
 	LoseAll: 'Start over',
 }
 
@@ -131,7 +131,7 @@ export default function Home() {
 		console.log('winner option:', data[parsedResult])
 	}
 
-	const handleClaim = async () => {
+	const handleClaim = async (e: any) => {
 		const result = await claimBet()
 		if (result.error) {
 			message.error(result.error)
@@ -139,7 +139,9 @@ export default function Home() {
 			return null
 		}
 
-		message.info(result.sig)
+		e.target.innerText === 'Start over'
+			? message.info('You have closed your bet account.')
+			: message.info('You have claimed your reward.')
 		setIsButtonHidden(true)
 		setTimeout(() => {
 			setRefetchTrigger(!refetchTrigger)
@@ -207,7 +209,7 @@ export default function Home() {
 								variant='secondary'
 								onClick={
 									betProofAccountState
-										? () => handleClaim()
+										? (e) => handleClaim(e)
 										: () => handleStartSpinning()
 								}
 								disabled={isButtonHidden}
