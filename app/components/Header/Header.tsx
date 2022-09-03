@@ -1,11 +1,10 @@
 /** @jsxImportSource theme-ui */
-import Link from 'next/link'
-import { Button, Container, Flex, Text, Box } from '@theme-ui/components'
+import { Button, Flex } from '@theme-ui/components'
 
 import WalletManager from '@/components/WalletManager/WalletManager'
 import { useState } from 'react'
-import { CloseIcon, MenuIcon, MoonLogo, ProfileLogo, SunLogo } from '../icons'
-import { useColorMode } from 'theme-ui'
+import { CloseIcon, DiscordIcon, MenuIcon, TwitterIcon } from '../icons'
+import { Link } from 'theme-ui'
 
 const Header = () => {
 	const [isMobileMenuActive, setIsMobileMenuActive] = useState(false)
@@ -97,8 +96,22 @@ const Header = () => {
 							<CloseIcon />
 						</Button>
 					</Flex>
-					{/* Finish menu items */}
+					<Link
+						href='https://discord.gg/sD9QwF3wcJ'
+						target='_blank'
+						rel='noopener noreferrer'
+					>
+						<DiscordIcon />
+					</Link>
+					<Link
+						href='https://twitter.com/WinnerHouseNFT'
+						target='_blank'
+						rel='noopener noreferrer'
+					>
+						<TwitterIcon />
+					</Link>
 					<WalletManager />
+					{/* Finish menu items */}
 				</Flex>
 				<Button
 					sx={{
