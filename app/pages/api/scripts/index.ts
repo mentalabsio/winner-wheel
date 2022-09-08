@@ -53,7 +53,7 @@ export default async function handler(req: any, res: any) {
 
   const keypair_string = process.env.HOUSE_PRIVATE_KEY
 
-  const keypair_array = keypair_string?.replace('[', '')?.replace(']', '')?.split(',')?.map(Number);
+  const keypair_array = JSON.parse(keypair_string)
 
   const keypair = new Uint8Array(keypair_array)
 
@@ -76,7 +76,7 @@ export default async function handler(req: any, res: any) {
           // 1.25% * 100 = 125 bps
           feeBasisPoints: 125,
           // How many lamports to send from `authority`to `treasuryAccount`.
-          initialFunds: new BN(5e9),
+          initialFunds: new BN(0),
           authority: authority.publicKey,
         })
 
