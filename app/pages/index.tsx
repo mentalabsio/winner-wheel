@@ -140,7 +140,7 @@ export default function Home() {
 		}
 
 		e.target.innerText === 'Start over'
-			? message.info('You have closed your bet account.')
+			? message.info('You have closed your bet.')
 			: message.info('You have claimed your reward.')
 		setIsButtonHidden(true)
 		setTimeout(() => {
