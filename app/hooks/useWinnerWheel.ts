@@ -49,7 +49,7 @@ const useWinnerWheel = () => {
     if (betProofAccount) return { error: 'User has an existing bet to claim.' }
 
     try {
-      const blockhash = (await connection.getLatestBlockhash('confirmed'))
+      const blockhash = (await connection.getLatestBlockhash('finalized'))
         .blockhash
 
       const ix = await program.createBetProofInstruction({
@@ -72,7 +72,7 @@ const useWinnerWheel = () => {
         (await signedTx).serialize()
       )
 
-      await connection.confirmTransaction(sig, 'confirmed')
+      await connection.confirmTransaction(sig, 'finalized')
 
       const betProofAccount = await BetProof.fetch(connection, betProof)
 
@@ -91,7 +91,7 @@ const useWinnerWheel = () => {
 
   const claimBet = async (): Promise<{ error: string; sig?: string }> => {
     try {
-      const blockhash = (await connection.getLatestBlockhash('confirmed'))
+      const blockhash = (await connection.getLatestBlockhash('finalized'))
         .blockhash
 
       const tx = new Transaction({
