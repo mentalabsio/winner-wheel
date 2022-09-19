@@ -45,23 +45,27 @@ const Wallet = ({ children }: { children: React.ReactChild }) => {
   )
 
   return (
-    <ConnectionProvider
-      endpoint={endpoint}
-      config={{
-        commitment: "confirmed",
-      }}
-    >
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          {/* <WalletMultiButton />
+		<ConnectionProvider
+			endpoint={endpoint}
+			config={{
+				commitment: 'confirmed',
+				httpHeaders: {
+					'Content-Type': 'application/json',
+					'Referer': 'http://winnerwheel.win',
+				},
+			}}
+		>
+			<WalletProvider wallets={wallets} autoConnect>
+				<WalletModalProvider>
+					{/* <WalletMultiButton />
           <WalletDisconnectButton /> */}
 
-          {children}
-          {/* Your app's components go here, nested within the context providers. */}
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
-  )
+					{children}
+					{/* Your app's components go here, nested within the context providers. */}
+				</WalletModalProvider>
+			</WalletProvider>
+		</ConnectionProvider>
+	)
 }
 
 export default Wallet
