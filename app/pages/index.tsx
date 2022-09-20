@@ -9,7 +9,7 @@ import { Box, Button, Flex } from 'theme-ui'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import useWinnerWheel from '@/hooks/useWinnerWheel'
 import { findBetProofAddress } from 'lib/pda'
-import { PublicKey } from '@solana/web3.js'
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
 import { BetProof } from 'lib/gen/accounts'
 import { message } from 'antd'
 import { data } from 'static/rouletteDataConfig'
@@ -82,6 +82,13 @@ export default function Home() {
 
 	const handleStartSpinning = async () => {
 		if (!publicKey) return null
+
+		const balance = await connection.getBalance(publicKey)
+		
+		if (selectedBet > balance  / LAMPORTS_PER_SOL) {
+			message.error('User has insufficient balance.')
+			return null
+		}
 
 		const createdBetProof = await createBetProof(selectedBet)
 
