@@ -1,0 +1,12 @@
+url = "https://ssc-dao.genesysgo.net/"
+
+[program]
+authority = "~/.config/solana/id.json"
+keypair = "/Users/ricardosouza/workspace/winner-house/winner-wheel/target/deploy/winner_wheel-keypair.json"
+shared_obj = "/Users/ricardosouza/workspace/winner-house/winner-wheel/target/deploy/winner_wheel.so"
+
+[options]
+jobs = 8
+max_retries = 9000
+sleep = 100
+timeout = 30
