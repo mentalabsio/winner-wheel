@@ -83,10 +83,13 @@ export default function Home() {
 	const handleStartSpinning = async () => {
 		if (!publicKey) return null
 
+		setIsButtonHidden(true)
+
 		const balance = await connection.getBalance(publicKey)
-		
-		if (selectedBet > balance  / LAMPORTS_PER_SOL) {
+
+		if (selectedBet > balance / LAMPORTS_PER_SOL) {
 			message.error('User has insufficient balance.')
+			setIsButtonHidden(false)
 			return null
 		}
 
@@ -94,6 +97,7 @@ export default function Home() {
 
 		if (createdBetProof.error) {
 			message.error(createdBetProof.error)
+			setIsButtonHidden(false)
 			return null
 		}
 
@@ -106,6 +110,7 @@ export default function Home() {
 			message.error(
 				'Transaction not confirmed. Check your recent transactions to see the results.'
 			)
+			setIsButtonHidden(false)
 			return null
 		}
 
@@ -117,7 +122,7 @@ export default function Home() {
 
 		setPrizeNumber(parsedResult)
 		setMustSpin(true)
-		setIsButtonHidden(true)
+
 		setTimeout(() => {
 			switch (resultKind) {
 				case 'Triplicate':
@@ -142,7 +147,10 @@ export default function Home() {
 		const result = await claimBet()
 		if (result.error) {
 			message.error(result.error)
-			setRefetchTrigger(!refetchTrigger)
+			setTimeout(() => {
+				setRefetchTrigger(!refetchTrigger)
+				setIsButtonHidden(false)
+			}, 11000)
 			return null
 		}
 
@@ -153,7 +161,7 @@ export default function Home() {
 		setTimeout(() => {
 			setRefetchTrigger(!refetchTrigger)
 			setIsButtonHidden(false)
-		}, 5000)
+		}, 11000)
 	}
 
 	return (
