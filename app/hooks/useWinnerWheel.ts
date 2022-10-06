@@ -9,6 +9,7 @@ import { BetProof } from 'lib/gen/accounts'
 import { fromTxError } from 'lib/gen/errors'
 import { findBetProofAddress } from 'lib/pda'
 import { WinnerWheelProgram } from 'lib'
+import { message } from 'antd'
 
 const parseBetValue = (betValue: number) => {
   switch (betValue) {
@@ -66,7 +67,11 @@ const useWinnerWheel = () => {
 
       tx.add(ix)
 
-      const signedTx = anchorWallet.signTransaction(tx)
+      const signedTx = await anchorWallet.signTransaction(tx)
+
+      console.log(signedTx)
+      // check if tx is signed by the user
+      if (signedTx) message.info('Bet started, wait for the transaction to finish.')
 
       const sig = await connection.sendRawTransaction(
         (await signedTx).serialize()
